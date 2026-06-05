@@ -61,10 +61,6 @@ From **computer-vision research** (large-pose face reenactment, FLAME 3D face mo
   <img src="https://github-readme-streak-stats.herokuapp.com/?user=theohsiung&hide_border=true&theme=tokyonight" alt="GitHub streak" />
 </p>
 
-<p align="center">
-  <img src="https://github-profile-trophy.vercel.app/?username=theohsiung&theme=tokyonight&no-frame=true&no-bg=true&margin-w=6&column=7" alt="Trophies" />
-</p>
-
 ### 📫 Reach me
 
 <p>
