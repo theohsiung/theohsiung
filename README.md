@@ -1,7 +1,7 @@
 <h1 align="center">Hi, I'm Theo Hsiung 👋</h1>
 
 <p align="center">
-  <b>AI systems engineer — LLM inference · semantic routing · agentic infrastructure</b>
+  <b>AI Research Scientist — LLM · routing · agentic infrastructure</b>
 </p>
 
 <p align="center">
