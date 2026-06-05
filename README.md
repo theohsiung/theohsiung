@@ -11,12 +11,10 @@
   <a href="https://www.linkedin.com/in/theohsiung">
     <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
   </a>
-  <img src="https://komarev.com/ghpvc/?username=theohsiung&style=for-the-badge&color=1f6feb&label=Profile+views" alt="Profile views" />
+  <img src="https://img.shields.io/badge/Taiwan-555555?style=for-the-badge&logo=googlemaps&logoColor=white" alt="Taiwan" />
 </p>
 
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:1f6feb,100:00ADD8&height=2&section=header" width="100%" />
-</p>
+---
 
 ### 🔭 What I'm building
 
@@ -41,6 +39,13 @@ From **computer-vision research** (large-pose face reenactment, FLAME 3D face mo
   <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" />
 </p>
 
+### ⭐ Highlights
+
+- 🧭 Active contributor to **vLLM Semantic Router** — multiple merged PRs across the Go router and docs.
+- 🤖 Author of **agent skills & coding-agent tooling** (`at2_skills`, `senior-swe-skills`).
+- 📊 Hands-on with **LLM evaluation & reasoning** experiments (needle-in-a-haystack, ARC-AGI solver).
+- 🎓 Research roots in **computer vision** — face reenactment, FLAME, diffusion avatars.
+
 ### 📌 Selected work
 
 | Project | What it is |
@@ -50,24 +55,9 @@ From **computer-vision research** (large-pose face reenactment, FLAME 3D face mo
 | [senior-swe-skills](https://github.com/theohsiung/senior-swe-skills) | Engineering skills & workflow tooling |
 | [poetiq-arc-agi-solver](https://github.com/theohsiung/poetiq-arc-agi-solver) | ARC-AGI reasoning solver |
 
-### 📊 GitHub at a glance
-
-<p align="center">
-  <img height="170" src="https://github-readme-stats.vercel.app/api?username=theohsiung&show_icons=true&hide_border=true&include_all_commits=true&rank_icon=github&theme=tokyonight" alt="GitHub stats" />
-  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=theohsiung&layout=compact&hide_border=true&langs_count=8&theme=tokyonight" alt="Top languages" />
-</p>
-
-<p align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=theohsiung&hide_border=true&theme=tokyonight" alt="GitHub streak" />
-</p>
-
 ### 📫 Reach me
 
 <p>
   <a href="https://www.linkedin.com/in/theohsiung"><img src="https://img.shields.io/badge/LinkedIn-theohsiung-0A66C2?style=flat-square&logo=linkedin&logoColor=white" /></a>
   <a href="https://github.com/theohsiung"><img src="https://img.shields.io/badge/GitHub-theohsiung-181717?style=flat-square&logo=github&logoColor=white" /></a>
-</p>
-
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:00ADD8,100:1f6feb&height=2&section=footer" width="100%" />
 </p>
