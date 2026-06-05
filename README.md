@@ -16,7 +16,7 @@
 
 ---
 
-### 🔭 What I'm building
+### 🔭 What I'm building CCurrently
 
 - 🧭 Contributing to **[vLLM Semantic Router](https://github.com/vllm-project/semantic-router)** — system-level intelligent routing for mixture-of-models across cloud, data center & edge. I work across the request lifecycle (**signal → decision → algorithm**): session token budgets, model-switch gating, and cache-retention directives.
 - 🤖 Building **agentic systems & developer tooling** — coding agents, agent skills, and harnesses for LLM-driven workflows.
