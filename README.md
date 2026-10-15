@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/meta--research-AI_for_Science-8957e5?style=for-the-badge&logo=github&logoColor=white" alt="meta-research" />
   </a>
   <a href="https://github.com/vllm-project/semantic-router">
-    <img src="https://img.shields.io/badge/vLLM_Semantic_Router-contributor-1f6feb?style=for-the-badge&logo=github&logoColor=white" alt="vLLM Semantic Router contributor" />
+    <img src="https://img.shields.io/badge/vLLM_Semantic_Router-committer-1f6feb?style=for-the-badge&logo=github&logoColor=white" alt="vLLM Semantic Router contributor" />
   </a>
   <a href="https://www.linkedin.com/in/theohsiung">
     <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
