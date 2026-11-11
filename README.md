@@ -49,6 +49,26 @@ I work at Delta Electronics in Taiwan and serve as an Associate Research Scienti
 
 &nbsp;
 
+<img src="https://img.shields.io/badge/WRITING-f59e0b?style=for-the-badge&labelColor=0d1117" alt="Writing"/>
+
+<table width="100%">
+<tbody><tr>
+  <td width="40%" valign="middle">
+    <a href="https://vllm-sr.ai/blog/vsr-claude-code"><img src="https://vllm-sr.ai/img/blog/vsr-claude-code/00-hero.png" alt="vSR: vLLM Semantic Router Inside Claude Code" width="100%"/></a>
+  </td>
+  <td valign="middle">
+    <a href="https://vllm-sr.ai/blog/vsr-claude-code"><b>vSR: vLLM Semantic Router Inside Claude Code</b></a><br/>
+    <sub>vLLM Semantic Router Blog · Nov 10, 2026 · with Abhinav Mahajan</sub>
+    <br/><br/>
+    vSR brings vLLM Semantic Router's decision model into Claude Code. It routes subagents to the right model, hides personal data and secrets before Claude reads them, and holds risky Bash commands for you to confirm.
+    <br/><br/>
+    <a href="https://vllm-sr.ai/blog/vsr-claude-code">Read the post ↗</a>
+  </td>
+</tr></tbody>
+</table>
+
+&nbsp;
+
 <img src="https://img.shields.io/badge/OPEN%20SOURCE-2dd4bf?style=for-the-badge&labelColor=0d1117" alt="Open-source contributions"/>
 
 Selected merged pull requests to [vllm-project/semantic-router](https://github.com/vllm-project/semantic-router), grouped by area:
@@ -69,13 +89,13 @@ Elsewhere: [BerriAI/moyai#470](https://github.com/BerriAI/moyai/pull/470) centra
 
 <img src="https://img.shields.io/badge/PROJECTS-2dd4bf?style=for-the-badge&labelColor=0d1117" alt="Projects"/>
 
-| Project | What it helps with |
+| Project | What it is |
 |---|---|
-| [**metaResearch**](https://github.com/theohsiung/metaResearch) | Let a coding agent run a design-optimization research loop against a simulator. |
-| [**at2_skills**](https://github.com/theohsiung/at2_skills) | Claude agent skills for office automation. |
-| [**senior-swe-skills**](https://github.com/theohsiung/senior-swe-skills) | Small, composable engineering skills for coding agents, synced from [mattpocock/skills](https://github.com/mattpocock/skills) with added verification steps. |
-| [**LLMTest_NeedleInAHaystack**](https://github.com/theohsiung/LLMTest_NeedleInAHaystack) | Long-context retrieval tests (needle in a haystack). |
-| [**Ubuntu-CUDA-cudnn-tutorial**](https://github.com/theohsiung/Ubuntu-CUDA-cudnn-tutorial) | Set up CUDA and cuDNN on Ubuntu. |
+| [**theohsiung/metaResearch**](https://github.com/theohsiung/metaResearch) | **AI for Science**: autonomous design-optimization framework (autoresearch + meta-harness) |
+| [**vllm-project/semantic-router**](https://github.com/vllm-project/semantic-router) | Intelligent LLM router (Envoy ExtProc), **contributor** |
+| [**at2_skills**](https://github.com/theohsiung/at2_skills) | Claude agent skills for office automation |
+| [**senior-swe-skills**](https://github.com/theohsiung/senior-swe-skills) | Engineering skills & workflow tooling |
+| [**poetiq-arc-agi-solver**](https://github.com/theohsiung/poetiq-arc-agi-solver) | ARC-AGI reasoning solver |
 
 &nbsp;
 
