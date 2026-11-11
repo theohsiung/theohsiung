@@ -13,7 +13,7 @@
 </div>
 
 <p align="center">
-  <a href="https://github.com/vllm-project/semantic-router/pulls?q=is%3Apr+author%3Atheohsiung+is%3Amerged"><img src="https://img.shields.io/badge/vLLM_Semantic_Router-60%2B_merged_PRs-881337?style=for-the-badge&logo=github&logoColor=white&labelColor=0d1117" alt="60+ merged PRs to vLLM Semantic Router"/></a>
+  <a href="https://github.com/vllm-project/semantic-router/pulls?q=is%3Apr+author%3Atheohsiung+is%3Amerged"><img src="https://img.shields.io/badge/vLLM_Semantic_Router-60%2B_merged_PRs-881337?style=for-the-badge&logo=github&logoColor=white&labelColor=0d1117" alt="Advenced Routing"/></a>
   <a href="https://github.com/theohsiung/metaResearch"><img src="https://img.shields.io/badge/meta--research-AI_for_Science-881337?style=for-the-badge&logo=github&logoColor=white&labelColor=0d1117" alt="meta-research"/></a>
   <a href="https://www.linkedin.com/in/theohsiung"><img src="https://img.shields.io/badge/LinkedIn-theohsiung-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=0d1117" alt="LinkedIn"/></a>
 </p>
