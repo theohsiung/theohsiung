@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-labelledby="t d">
+  <title id="t">Theo Hsiung</title>
+  <desc id="d">AI for Science, LLM systems and agentic infrastructure. A research loop: propose, simulate, diagnose, hypothesize, with every result committed to git.</desc>
+  <defs>
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#21262d"/>
+    </pattern>
+    <clipPath id="round"><rect width="1200" height="320" rx="16"/></clipPath>
+    <linearGradient id="fade" x1="0" x2="1">
+      <stop offset="0" stop-color="#2dd4bf"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <style>
+      .name { font: 700 64px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #e6edf3; letter-spacing: -1px; }
+      .tag  { font: 600 22px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #2dd4bf; }
+      .sub  { font: 400 16px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #8b949e; }
+      .mono { font: 500 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #8b949e; }
+      .hot  { fill: #f59e0b; }
+      .lbl  { font: 600 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #e6edf3; }
+      .core { font: 600 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #8b949e; }
+      .orbit { transform-origin: 940px 160px; animation: spin 9s linear infinite; }
+      .pulse { animation: pulse 2.4s ease-in-out infinite; }
+      .p2 { animation-delay: .6s; } .p3 { animation-delay: 1.2s; } .p4 { animation-delay: 1.8s; }
+      .caret { animation: blink 1.1s steps(1) infinite; }
+      @keyframes spin  { to { transform: rotate(360deg); } }
+      @keyframes pulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+      @keyframes blink { 50% { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    </style>
+  </defs>
+
+  <rect width="1200" height="320" rx="16" fill="#0d1117"/>
+  <rect width="1200" height="320" rx="16" fill="url(#dots)"/>
+  <rect x="0" y="0" width="1200" height="4" fill="url(#fade)" clip-path="url(#round)"/>
+
+  <!-- identity -->
+  <text x="64" y="122" class="name">Theo Hsiung</text>
+  <text x="66" y="164" class="tag">AI for Science · LLM Systems · Agentic Infra</text>
+  <text x="66" y="196" class="sub">Associate Research Scientist, vLLM Semantic Router · Delta Electronics · Taiwan</text>
+  <text x="66" y="262" class="mono">$ route <tspan class="hot">signal</tspan> → <tspan class="hot">decision</tspan> → <tspan class="hot">algorithm</tspan> → model<tspan class="caret" fill="#2dd4bf"> ▍</tspan></text>
+
+  <!-- research loop -->
+  <circle cx="940" cy="160" r="96" fill="none" stroke="#30363d" stroke-width="2" stroke-dasharray="4 6"/>
+  <g class="orbit">
+    <circle cx="940" cy="64" r="7" fill="#2dd4bf"/>
+    <circle cx="940" cy="64" r="14" fill="#2dd4bf" opacity=".18"/>
+  </g>
+
+  <circle cx="940" cy="160" r="40" fill="#161b22" stroke="#30363d"/>
+  <text x="940" y="156" text-anchor="middle" class="core">git</text>
+  <text x="940" y="172" text-anchor="middle" class="core">commit</text>
+
+  <g>
+    <circle class="pulse"    cx="940"  cy="64"  r="5" fill="#f59e0b"/>
+    <circle class="pulse p2" cx="1036" cy="160" r="5" fill="#f59e0b"/>
+    <circle class="pulse p3" cx="940"  cy="256" r="5" fill="#f59e0b"/>
+    <circle class="pulse p4" cx="844"  cy="160" r="5" fill="#f59e0b"/>
+  </g>
+  <text x="940"  y="44"  text-anchor="middle" class="lbl">propose</text>
+  <text x="1052" y="165" text-anchor="start"  class="lbl">simulate</text>
+  <text x="940"  y="288" text-anchor="middle" class="lbl">diagnose</text>
+  <text x="828"  y="165" text-anchor="end"    class="lbl">hypothesize</text>
+</svg>
