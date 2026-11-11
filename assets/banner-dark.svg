@@ -7,15 +7,15 @@
     </pattern>
     <clipPath id="round"><rect width="1200" height="320" rx="16"/></clipPath>
     <linearGradient id="fade" x1="0" x2="1">
-      <stop offset="0" stop-color="#2dd4bf"/>
-      <stop offset="1" stop-color="#f59e0b"/>
+      <stop offset="0" stop-color="#ea580c"/>
+      <stop offset="1" stop-color="#fbbf24"/>
     </linearGradient>
     <style>
       .name { font: 700 64px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #e6edf3; letter-spacing: -1px; }
-      .tag  { font: 600 22px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #2dd4bf; }
+      .tag  { font: 600 22px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #fb923c; }
       .sub  { font: 400 16px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #8b949e; }
       .mono { font: 500 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #8b949e; }
-      .hot  { fill: #f59e0b; }
+      .hot  { fill: #fdba74; }
       .lbl  { font: 600 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #e6edf3; }
       .core { font: 600 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #8b949e; }
       .orbit { transform-origin: 940px 160px; animation: spin 9s linear infinite; }
@@ -37,13 +37,13 @@
   <text x="64" y="122" class="name">Theo Hsiung</text>
   <text x="66" y="164" class="tag">AI for Science · LLM Systems · Agentic Infra</text>
   <text x="66" y="196" class="sub">Associate Research Scientist, vLLM Semantic Router · Delta Electronics · Taiwan</text>
-  <text x="66" y="262" class="mono">$ route <tspan class="hot">signal</tspan> → <tspan class="hot">decision</tspan> → <tspan class="hot">algorithm</tspan> → model<tspan class="caret" fill="#2dd4bf"> ▍</tspan></text>
+  <text x="66" y="262" class="mono">$ route <tspan class="hot">signal</tspan> → <tspan class="hot">decision</tspan> → <tspan class="hot">algorithm</tspan> → model<tspan class="caret" fill="#fb923c"> ▍</tspan></text>
 
   <!-- research loop -->
   <circle cx="940" cy="160" r="96" fill="none" stroke="#30363d" stroke-width="2" stroke-dasharray="4 6"/>
   <g class="orbit">
-    <circle cx="940" cy="64" r="7" fill="#2dd4bf"/>
-    <circle cx="940" cy="64" r="14" fill="#2dd4bf" opacity=".18"/>
+    <circle cx="940" cy="64" r="7" fill="#fb923c"/>
+    <circle cx="940" cy="64" r="14" fill="#fb923c" opacity=".18"/>
   </g>
 
   <circle cx="940" cy="160" r="40" fill="#161b22" stroke="#30363d"/>
@@ -51,10 +51,10 @@
   <text x="940" y="172" text-anchor="middle" class="core">commit</text>
 
   <g>
-    <circle class="pulse"    cx="940"  cy="64"  r="5" fill="#f59e0b"/>
-    <circle class="pulse p2" cx="1036" cy="160" r="5" fill="#f59e0b"/>
-    <circle class="pulse p3" cx="940"  cy="256" r="5" fill="#f59e0b"/>
-    <circle class="pulse p4" cx="844"  cy="160" r="5" fill="#f59e0b"/>
+    <circle class="pulse"    cx="940"  cy="64"  r="5" fill="#fdba74"/>
+    <circle class="pulse p2" cx="1036" cy="160" r="5" fill="#fdba74"/>
+    <circle class="pulse p3" cx="940"  cy="256" r="5" fill="#fdba74"/>
+    <circle class="pulse p4" cx="844"  cy="160" r="5" fill="#fdba74"/>
   </g>
   <text x="940"  y="44"  text-anchor="middle" class="lbl">propose</text>
   <text x="1052" y="165" text-anchor="start"  class="lbl">simulate</text>
