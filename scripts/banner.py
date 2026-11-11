@@ -1,73 +1,95 @@
 """Generate assets/banner-{dark,light}.svg.
 
-Run `python3 scripts/banner.py` after changing a palette below. The banner is
-one 8-second loop: a comet orbits the research loop, each node flashes as the
-comet reaches it, and each lap ends in a git commit with a new hash.
+Run `python3 scripts/banner.py` after changing a palette below.
+
+Everything runs on one 8-second clock. A wine-to-pink arc draws the research
+loop; each node, its label and one route token light up as the arc reaches
+them and stay lit. When the arc closes, the core commits: a ripple, a new
+hash, and the loop fades out to start again.
 """
 
 from pathlib import Path
 
 PALETTES = {
     "dark": {
-        "bg": "#0d1117", "grid": "#21262d", "ring": "#30363d", "core": "#161b22",
-        "text": "#e6edf3", "muted": "#8b949e",
-        "accent": "#e0607e",  # wine, lifted for contrast on the dark background
-        "hot": "#f2cc8f",     # champagne
+        "bg": "#0d1117", "grid": "#1c2129", "track": "#262c36", "core": "#161b22",
+        "text": "#e6edf3", "muted": "#7d8590",
+        "wine": "#be123c", "pink": "#f472b6", "soft": "#f9a8d4",
+        "tag": ("#e8577a", "#f9a8d4"), "glow": "#9f1239", "glow_opacity": 0.22,
     },
     "light": {
-        "bg": "#ffffff", "grid": "#d8dee4", "ring": "#d0d7de", "core": "#f6f8fa",
-        "text": "#1f2328", "muted": "#59636e",
-        "accent": "#881337",  # deep wine
-        "hot": "#be123c",
+        "bg": "#ffffff", "grid": "#e4e7eb", "track": "#e6e9ed", "core": "#fdf2f6",
+        "text": "#1f2328", "muted": "#6e7781",
+        "wine": "#881337", "pink": "#db2777", "soft": "#be185d",
+        "tag": ("#881337", "#db2777"), "glow": "#f9a8d4", "glow_opacity": 0.18,
     },
 }
-BAR = ("#881337", "#be123c", "#f2cc8f")  # top bar gradient, shared by both themes
+BAR = ("#881337", "#be123c", "#f472b6")  # top bar, shared by both themes
 
 CX, CY, R = 940, 160, 96
-LAP = 8  # seconds per orbit; node i flashes at i * LAP / 4
-CIRCUMFERENCE = 2 * 3.14159265 * R
+LAP = 8.0          # seconds per loop
+DRAW_END = 85.0    # % of the lap at which the arc closes and the commit happens
+FADE_START = 93.0  # % of the lap at which the loop fades out for the next lap
 NODES = [  # label, node x, node y, label x, label y, anchor
     ("propose", CX, CY - R, CX, CY - R - 20, "middle"),
     ("simulate", CX + R, CY, CX + R + 16, CY + 5, "start"),
     ("diagnose", CX, CY + R, CX, CY + R + 32, "middle"),
     ("hypothesize", CX - R, CY, CX - R - 16, CY + 5, "end"),
 ]
-HASHES = ["a3f9c1e", "7be20d4", "e51c8a0", "0c4d7f2"]
 ROUTE = ["signal", "decision", "algorithm", "model"]
+HASHES = ["a3f9c1e", "7be20d4", "e51c8a0", "0c4d7f2"]
 
 
-def trail(color: str) -> str:
-    """Arcs that end at the comet head (12 o'clock) and fade toward the tail."""
-    arcs = []
-    for length, opacity, width in ((150, 0.12, 3), (90, 0.25, 3), (45, 0.5, 4)):
-        start = -90 - length / CIRCUMFERENCE * 360
-        arcs.append(
-            f'<circle cx="{CX}" cy="{CY}" r="{R}" fill="none" stroke="{color}" '
-            f'stroke-width="{width}" stroke-linecap="round" opacity="{opacity}" '
-            f'stroke-dasharray="{length:.1f} {CIRCUMFERENCE:.1f}" '
-            f'transform="rotate({start:.2f} {CX} {CY})"/>'
-        )
-    return "\n    ".join(arcs)
+def reach(i: int) -> float:
+    """% of the lap at which the arc reaches node i (clockwise from the top)."""
+    return DRAW_END * i / len(NODES)
+
+
+def lit_keyframes(name: str, i: int, off: str, on: str, pop: bool = False) -> str:
+    """Off until the arc reaches node i, on until the fade, then off again."""
+    r = reach(i)
+    grow = " transform: scale(1.7);" if pop else ""
+    rest = " transform: scale(1);" if pop else ""
+    if i == 0:
+        steps = [f"0% {{ {on}{grow} }}", f"5% {{ {on}{rest} }}"]
+    else:
+        steps = [f"0%, {r:.2f}% {{ {off}{rest} }}", f"{r + 1.5:.2f}% {{ {on}{grow} }}", f"{r + 6:.2f}% {{ {on}{rest} }}"]
+    steps += [f"{FADE_START}% {{ {on}{rest} }}", f"99%, 100% {{ {off}{rest} }}"]
+    return f"@keyframes {name} {{ {' '.join(steps)} }}"
 
 
 def render(p: dict) -> str:
-    step = LAP / len(NODES)
+    node_off = f"fill: {p['bg']}; stroke: {p['track']};"
+    node_on = f"fill: {p['pink']}; stroke: {p['pink']};"
+    keyframes = []
+    for i in range(len(NODES)):
+        keyframes.append(lit_keyframes(f"n{i}", i, node_off, node_on, pop=True))
+        keyframes.append(lit_keyframes(f"l{i}", i, f"fill: {p['muted']};", f"fill: {p['text']};"))
+        keyframes.append(lit_keyframes(f"t{i}", i, "fill-opacity: .3;", "fill-opacity: 1;"))
+    keyframes = "\n      ".join(keyframes)
+
     nodes = "\n  ".join(
-        f'<circle class="node" style="animation-delay:{i * step}s" cx="{x}" cy="{y}" r="5" fill="{p["hot"]}"/>'
+        f'<circle class="node" style="animation-name:n{i}" cx="{x}" cy="{y}" r="5" stroke-width="2"/>'
         for i, (_, x, y, *_rest) in enumerate(NODES)
     )
     labels = "\n  ".join(
-        f'<text class="lbl" style="animation-delay:{i * step}s" x="{lx}" y="{ly}" text-anchor="{a}">{name}</text>'
+        f'<text class="lbl" style="animation-name:l{i}" x="{lx}" y="{ly}" text-anchor="{a}">{name}</text>'
         for i, (name, _x, _y, lx, ly, a) in enumerate(NODES)
     )
+    route = ' <tspan class="arrow">→</tspan> '.join(
+        f'<tspan class="tok" style="animation-name:t{i}">{t}</tspan>' for i, t in enumerate(ROUTE)
+    )
+    # Hash i appears at the commit that ends lap i-1. Negative delays keep every
+    # hash's animation running from t=0, so no hash waits in an unstyled state.
+    cycle = LAP * len(HASHES)
+    commit_at = LAP * DRAW_END / 100
     hashes = "\n  ".join(
-        f'<text class="hash{" h0" if i == 0 else ""}" style="animation-delay:{i * LAP}s" x="{CX}" y="{CY + 14}" text-anchor="middle">{h}</text>'
+        f'<text class="hash{" h0" if i == 0 else ""}" style="animation-delay:{(commit_at + LAP * (i - 1)) % cycle - cycle:.2f}s" '
+        f'x="{CX}" y="{CY + 14}" text-anchor="middle">{h}</text>'
         for i, h in enumerate(HASHES)
     )
-    route = " → ".join(
-        f'<tspan class="tok" style="animation-delay:{i * 0.5}s">{t}</tspan>' for i, t in enumerate(ROUTE)
-    )
-    hash_cycle = LAP * len(HASHES)
+    show = 100 / len(HASHES)
+
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-labelledby="t d">
   <title id="t">Theo Hsiung</title>
   <desc id="d">AI for Science, LLM systems and agentic infrastructure. A research loop: propose, simulate, diagnose, hypothesize, with every result committed to git.</desc>
@@ -79,77 +101,89 @@ def render(p: dict) -> str:
     <clipPath id="round"><rect width="1200" height="320" rx="16"/></clipPath>
     <linearGradient id="bar" x1="0" x2="1">
       <stop offset="0" stop-color="{BAR[0]}"/>
-      <stop offset=".55" stop-color="{BAR[1]}"/>
+      <stop offset=".5" stop-color="{BAR[1]}"/>
       <stop offset="1" stop-color="{BAR[2]}"/>
     </linearGradient>
-    <linearGradient id="shine" x1="0" x2="1">
-      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
-      <stop offset=".5" stop-color="#fff" stop-opacity=".75"/>
-      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    <linearGradient id="tag" x1="0" x2="1">
+      <stop offset="0" stop-color="{p["tag"][0]}"/>
+      <stop offset="1" stop-color="{p["tag"][1]}"/>
     </linearGradient>
-    <radialGradient id="glow">
-      <stop offset="0" stop-color="{p["accent"]}" stop-opacity=".45"/>
-      <stop offset="1" stop-color="{p["accent"]}" stop-opacity="0"/>
+    <linearGradient id="arc" gradientUnits="userSpaceOnUse" x1="{CX - R}" y1="{CY - R}" x2="{CX + R}" y2="{CY + R}">
+      <stop offset="0" stop-color="{p["wine"]}"/>
+      <stop offset="1" stop-color="{p["pink"]}"/>
+    </linearGradient>
+    <radialGradient id="aura">
+      <stop offset="0" stop-color="{p["glow"]}" stop-opacity="{p["glow_opacity"]}"/>
+      <stop offset="1" stop-color="{p["glow"]}" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="spark">
+      <stop offset="0" stop-color="{p["pink"]}" stop-opacity=".6"/>
+      <stop offset="1" stop-color="{p["pink"]}" stop-opacity="0"/>
     </radialGradient>
     <style>
       .name {{ font: 700 64px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: {p["text"]}; letter-spacing: -1px; }}
-      .tag  {{ font: 600 22px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: {p["accent"]}; }}
+      .tag  {{ font: 600 22px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: url(#tag); }}
       .sub  {{ font: 400 16px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: {p["muted"]}; }}
       .mono {{ font: 500 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: {p["muted"]}; }}
-      .lbl  {{ font: 600 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: {p["text"]};
-               animation: label {LAP}s ease-out infinite; }}
+      .lbl  {{ font: 600 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }}
       .core {{ font: 600 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: {p["muted"]}; }}
-      .hash {{ font: 700 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: {p["accent"]}; opacity: 0;
-               animation: hash {hash_cycle}s linear infinite; }}
-      .h0 {{ opacity: 1; }}
+      .hash {{ font: 700 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: {p["pink"]};
+               opacity: 0; animation: hash {cycle:g}s ease-out infinite; }}
+      .h0   {{ opacity: 1; }}
 
-      .orbit  {{ transform-origin: {CX}px {CY}px; animation: spin {LAP}s linear infinite; }}
-      .node   {{ opacity: .45; transform-box: fill-box; transform-origin: center; animation: flash {LAP}s ease-out infinite; }}
-      .ripple {{ opacity: 0; transform-box: fill-box; transform-origin: center; animation: ripple {LAP}s ease-out infinite; }}
-      .tok    {{ fill: {p["hot"]}; fill-opacity: .4; animation: token 4s ease-in-out infinite; }}
-      .caret  {{ animation: blink 1.1s steps(1) infinite; }}
-      .sweep  {{ animation: sweep 6s ease-in-out infinite; }}
+      /* Every loop animation shares one clock: {LAP:g}s, started together. */
+      .node, .lbl, .tok, .arcdraw, .head, .ripple, .aura {{
+        animation-duration: {LAP:g}s; animation-iteration-count: infinite; }}
+      .node {{ fill: {p["pink"]}; stroke: {p["pink"]}; transform-box: fill-box; transform-origin: center;
+               animation-timing-function: cubic-bezier(.2, .7, .3, 1); }}
+      .lbl  {{ fill: {p["text"]}; animation-timing-function: ease-out; }}
+      .tok  {{ fill: {p["soft"]}; animation-timing-function: ease-out; }}
+      .arrow {{ fill: {p["muted"]}; }}
+      .arcdraw {{ stroke-dasharray: 100 100; stroke-dashoffset: 0; animation-name: draw; animation-timing-function: linear; }}
+      .head {{ transform-origin: {CX}px {CY}px; animation-name: orbit; animation-timing-function: linear; }}
+      .ripple {{ opacity: 0; transform-box: fill-box; transform-origin: center; animation-name: ripple; animation-timing-function: ease-out; }}
+      .aura {{ animation-name: aura; animation-timing-function: ease-in-out; }}
+      .caret {{ animation: blink 1.1s steps(1) infinite; }}
 
-      @keyframes spin   {{ to {{ transform: rotate(360deg); }} }}
-      @keyframes flash  {{ 0% {{ opacity: 1; transform: scale(2); }} 12% {{ opacity: 1; transform: scale(1); }} 35%, 100% {{ opacity: .45; transform: scale(1); }} }}
-      @keyframes label  {{ 0%, 14% {{ fill: {p["accent"]}; }} 35%, 100% {{ fill: {p["text"]}; }} }}
-      @keyframes ripple {{ 0% {{ opacity: .7; transform: scale(1); }} 30% {{ opacity: 0; transform: scale(1.8); }} 100% {{ opacity: 0; }} }}
-      @keyframes hash   {{ 0% {{ opacity: 0; }} 3%, 22% {{ opacity: 1; }} 25%, 100% {{ opacity: 0; }} }}
-      @keyframes token  {{ 0%, 100% {{ fill-opacity: .4; }} 12%, 30% {{ fill-opacity: 1; }} 50% {{ fill-opacity: .4; }} }}
+      @keyframes draw   {{ 0% {{ stroke-dashoffset: 100; opacity: 1; }} {DRAW_END}% {{ stroke-dashoffset: 0; opacity: 1; }}
+                          {FADE_START}% {{ stroke-dashoffset: 0; opacity: 1; }} 100% {{ stroke-dashoffset: 0; opacity: 0; }} }}
+      @keyframes orbit  {{ 0% {{ transform: rotate(0deg); opacity: 1; }} {DRAW_END}% {{ transform: rotate(360deg); opacity: 1; }}
+                          {FADE_START}% {{ transform: rotate(360deg); opacity: 1; }} 100% {{ transform: rotate(360deg); opacity: 0; }} }}
+      @keyframes ripple {{ 0%, {DRAW_END}% {{ opacity: 0; transform: scale(1); }} {DRAW_END + 1}% {{ opacity: .8; transform: scale(1); }}
+                          100% {{ opacity: 0; transform: scale(1.9); }} }}
+      @keyframes aura   {{ 0%, {DRAW_END - 10}% {{ opacity: .55; }} {DRAW_END + 3}% {{ opacity: 1; }} 100% {{ opacity: .55; }} }}
+      @keyframes hash   {{ 0%, 1.5% {{ opacity: 0; transform: translateY(5px); }} 3.5% {{ opacity: 1; transform: translateY(0); }}
+                          {show:g}% {{ opacity: 1; transform: translateY(0); }} {show + 1.5:g}% {{ opacity: 0; transform: translateY(-5px); }}
+                          100% {{ opacity: 0; }} }}
       @keyframes blink  {{ 50% {{ opacity: 0; }} }}
-      @keyframes sweep  {{ 0% {{ transform: translateX(-260px); }} 60%, 100% {{ transform: translateX(1260px); }} }}
+      {keyframes}
 
-      @media (prefers-reduced-motion: reduce) {{
-        * {{ animation: none !important; }}
-        .node {{ opacity: 1; }}
-        .tok {{ fill-opacity: 1; }}
-      }}
+      @media (prefers-reduced-motion: reduce) {{ * {{ animation: none !important; }} }}
     </style>
   </defs>
 
   <rect width="1200" height="320" rx="16" fill="{p["bg"]}"/>
   <rect width="1200" height="320" rx="16" fill="url(#dots)"/>
-  <g clip-path="url(#round)">
-    <rect width="1200" height="4" fill="url(#bar)"/>
-    <rect class="sweep" width="260" height="4" fill="url(#shine)"/>
-  </g>
+  <circle class="aura" cx="{CX}" cy="{CY}" r="230" fill="url(#aura)"/>
+  <rect width="1200" height="4" fill="url(#bar)" clip-path="url(#round)"/>
 
   <!-- identity -->
   <text x="64" y="122" class="name">Theo Hsiung</text>
   <text x="66" y="164" class="tag">AI for Science · LLM Systems · Agentic Infra</text>
   <text x="66" y="196" class="sub">Associate Research Scientist, vLLM Semantic Router · Delta Electronics · Taiwan</text>
-  <text x="66" y="262" class="mono">$ route {route}<tspan class="caret" fill="{p["accent"]}"> ▍</tspan></text>
+  <text x="66" y="262" class="mono">$ route {route}<tspan class="caret" fill="{p["pink"]}"> ▍</tspan></text>
 
-  <!-- research loop: one lap = {LAP}s -->
-  <circle cx="{CX}" cy="{CY}" r="{R}" fill="none" stroke="{p["ring"]}" stroke-width="2" stroke-dasharray="4 6"/>
-  <g class="orbit">
-    {trail(p["accent"])}
-    <circle cx="{CX}" cy="{CY - R}" r="18" fill="url(#glow)"/>
-    <circle cx="{CX}" cy="{CY - R}" r="6" fill="{p["accent"]}"/>
+  <!-- research loop: the arc draws clockwise from the top -->
+  <circle cx="{CX}" cy="{CY}" r="{R}" fill="none" stroke="{p["track"]}" stroke-width="2"/>
+  <circle class="arcdraw" cx="{CX}" cy="{CY}" r="{R}" pathLength="100" fill="none" stroke="url(#arc)"
+          stroke-width="3" stroke-linecap="round" transform="rotate(-90 {CX} {CY})"/>
+  <g class="head">
+    <circle cx="{CX}" cy="{CY - R}" r="16" fill="url(#spark)"/>
+    <circle cx="{CX}" cy="{CY - R}" r="4" fill="{p["soft"]}"/>
   </g>
 
-  <circle class="ripple" cx="{CX}" cy="{CY}" r="40" fill="none" stroke="{p["accent"]}" stroke-width="2"/>
-  <circle cx="{CX}" cy="{CY}" r="40" fill="{p["core"]}" stroke="{p["ring"]}"/>
+  <circle class="ripple" cx="{CX}" cy="{CY}" r="40" fill="none" stroke="{p["pink"]}" stroke-width="1.5"/>
+  <circle cx="{CX}" cy="{CY}" r="40" fill="{p["core"]}" stroke="{p["track"]}"/>
   <text x="{CX}" y="{CY - 4}" text-anchor="middle" class="core">git commit</text>
   {hashes}
 
