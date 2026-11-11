@@ -23,19 +23,19 @@ PALETTES = {
         "bg": "#0d1117", "grid": "#1c2129", "panel": "#161b22", "track": "#30363d",
         "text": "#e6edf3", "muted": "#7d8590", "fin": "#ffffff",
         "wine": "#be123c", "wine_text": "#e8577a",
-        "blue": "#9cc5e6", "blue_line": "#9cc5e6", "blue_text": "#c6dff2",
+        "blue": "#a6cdec", "blue_line": "#a6cdec", "blue_text": "#c6dff2",
         "tag": ("#e8577a", "#b9d6ee"),
     },
     "light": {
         "bg": "#ffffff", "grid": "#e4e7eb", "panel": "#f6f8fa", "track": "#d0d7de",
         "text": "#1f2328", "muted": "#6e7781", "fin": "#ffffff",
         "wine": "#be123c", "wine_text": "#881337",
-        "blue": "#9cc5e6", "blue_line": "#3d6a96", "blue_text": "#3d6a96",
-        "tag": ("#881337", "#3d6a96"),
+        "blue": "#a6cdec", "blue_line": "#4a78a6", "blue_text": "#4a78a6",
+        "tag": ("#881337", "#4a78a6"),
     },
 }
-BAR = ("#881337", "#be123c", "#9cc5e6")
-HEAT = [(0.0, "#9cc5e6"), (0.4, "#a78bb5"), (0.7, "#be123c"), (1.0, "#881337")]  # cool -> hot
+BAR = ("#881337", "#be123c", "#a6cdec")
+HEAT = [(0.0, "#a6cdec"), (0.4, "#a78bb5"), (0.7, "#be123c"), (1.0, "#881337")]  # cool -> hot
 
 CYCLE = 20.0
 SCENE_A = (0.0, 9.4)  # visible window; each edge fades over FADE
