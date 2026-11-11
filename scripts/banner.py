@@ -2,7 +2,7 @@
 
 Run `python3 scripts/banner.py` after changing a palette below.
 
-Everything runs on one 8-second clock. A wine-to-pink arc draws the research
+Everything runs on one 8-second clock. A wine-to-blue arc draws the research
 loop; each node, its label and one route token light up as the arc reaches
 them and stay lit. When the arc closes, the core commits: a ripple, a new
 hash, and the loop fades out to start again.
@@ -14,17 +14,17 @@ PALETTES = {
     "dark": {
         "bg": "#0d1117", "grid": "#1c2129", "track": "#262c36", "core": "#161b22",
         "text": "#e6edf3", "muted": "#7d8590",
-        "wine": "#be123c", "pink": "#f472b6", "soft": "#f9a8d4",
-        "tag": ("#e8577a", "#f9a8d4"), "glow": "#9f1239", "glow_opacity": 0.22,
+        "wine": "#be123c", "blue": "#9cc5e6", "soft": "#c6dff2",  # powder blue
+        "tag": ("#e8577a", "#b9d6ee"), "glow": "#9f1239", "glow_opacity": 0.22,
     },
     "light": {
-        "bg": "#ffffff", "grid": "#e4e7eb", "track": "#e6e9ed", "core": "#fdf2f6",
+        "bg": "#ffffff", "grid": "#e4e7eb", "track": "#e6e9ed", "core": "#f3f8fc",
         "text": "#1f2328", "muted": "#6e7781",
-        "wine": "#881337", "pink": "#db2777", "soft": "#be185d",
-        "tag": ("#881337", "#db2777"), "glow": "#f9a8d4", "glow_opacity": 0.18,
+        "wine": "#881337", "blue": "#3d6a96", "soft": "#2f5a85",  # dusty blue, readable on white
+        "tag": ("#881337", "#3d6a96"), "glow": "#c6dff2", "glow_opacity": 0.3,
     },
 }
-BAR = ("#881337", "#be123c", "#f472b6")  # top bar, shared by both themes
+BAR = ("#881337", "#be123c", "#9cc5e6")  # top bar, shared by both themes
 
 CX, CY, R = 940, 160, 96
 LAP = 8.0          # seconds per loop
@@ -60,7 +60,7 @@ def lit_keyframes(name: str, i: int, off: str, on: str, pop: bool = False) -> st
 
 def render(p: dict) -> str:
     node_off = f"fill: {p['bg']}; stroke: {p['track']};"
-    node_on = f"fill: {p['pink']}; stroke: {p['pink']};"
+    node_on = f"fill: {p['blue']}; stroke: {p['blue']};"
     keyframes = []
     for i in range(len(NODES)):
         keyframes.append(lit_keyframes(f"n{i}", i, node_off, node_on, pop=True))
@@ -110,15 +110,15 @@ def render(p: dict) -> str:
     </linearGradient>
     <linearGradient id="arc" gradientUnits="userSpaceOnUse" x1="{CX - R}" y1="{CY - R}" x2="{CX + R}" y2="{CY + R}">
       <stop offset="0" stop-color="{p["wine"]}"/>
-      <stop offset="1" stop-color="{p["pink"]}"/>
+      <stop offset="1" stop-color="{p["blue"]}"/>
     </linearGradient>
     <radialGradient id="aura">
       <stop offset="0" stop-color="{p["glow"]}" stop-opacity="{p["glow_opacity"]}"/>
       <stop offset="1" stop-color="{p["glow"]}" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="spark">
-      <stop offset="0" stop-color="{p["pink"]}" stop-opacity=".6"/>
-      <stop offset="1" stop-color="{p["pink"]}" stop-opacity="0"/>
+      <stop offset="0" stop-color="{p["blue"]}" stop-opacity=".6"/>
+      <stop offset="1" stop-color="{p["blue"]}" stop-opacity="0"/>
     </radialGradient>
     <style>
       .name {{ font: 700 64px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: {p["text"]}; letter-spacing: -1px; }}
@@ -127,14 +127,14 @@ def render(p: dict) -> str:
       .mono {{ font: 500 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: {p["muted"]}; }}
       .lbl  {{ font: 600 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }}
       .core {{ font: 600 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: {p["muted"]}; }}
-      .hash {{ font: 700 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: {p["pink"]};
+      .hash {{ font: 700 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: {p["blue"]};
                opacity: 0; animation: hash {cycle:g}s ease-out infinite; }}
       .h0   {{ opacity: 1; }}
 
       /* Every loop animation shares one clock: {LAP:g}s, started together. */
       .node, .lbl, .tok, .arcdraw, .head, .ripple, .aura {{
         animation-duration: {LAP:g}s; animation-iteration-count: infinite; }}
-      .node {{ fill: {p["pink"]}; stroke: {p["pink"]}; transform-box: fill-box; transform-origin: center;
+      .node {{ fill: {p["blue"]}; stroke: {p["blue"]}; transform-box: fill-box; transform-origin: center;
                animation-timing-function: cubic-bezier(.2, .7, .3, 1); }}
       .lbl  {{ fill: {p["text"]}; animation-timing-function: ease-out; }}
       .tok  {{ fill: {p["soft"]}; animation-timing-function: ease-out; }}
@@ -171,7 +171,7 @@ def render(p: dict) -> str:
   <text x="64" y="122" class="name">Theo Hsiung</text>
   <text x="66" y="164" class="tag">AI for Science · LLM Systems · Agentic Infra</text>
   <text x="66" y="196" class="sub">Associate Research Scientist, vLLM Semantic Router · Delta Electronics · Taiwan</text>
-  <text x="66" y="262" class="mono">$ route {route}<tspan class="caret" fill="{p["pink"]}"> ▍</tspan></text>
+  <text x="66" y="262" class="mono">$ route {route}<tspan class="caret" fill="{p["blue"]}"> ▍</tspan></text>
 
   <!-- research loop: the arc draws clockwise from the top -->
   <circle cx="{CX}" cy="{CY}" r="{R}" fill="none" stroke="{p["track"]}" stroke-width="2"/>
@@ -182,7 +182,7 @@ def render(p: dict) -> str:
     <circle cx="{CX}" cy="{CY - R}" r="4" fill="{p["soft"]}"/>
   </g>
 
-  <circle class="ripple" cx="{CX}" cy="{CY}" r="40" fill="none" stroke="{p["pink"]}" stroke-width="1.5"/>
+  <circle class="ripple" cx="{CX}" cy="{CY}" r="40" fill="none" stroke="{p["blue"]}" stroke-width="1.5"/>
   <circle cx="{CX}" cy="{CY}" r="40" fill="{p["core"]}" stroke="{p["track"]}"/>
   <text x="{CX}" y="{CY - 4}" text-anchor="middle" class="core">git commit</text>
   {hashes}

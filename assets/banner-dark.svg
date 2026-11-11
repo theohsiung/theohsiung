@@ -10,23 +10,23 @@
     <linearGradient id="bar" x1="0" x2="1">
       <stop offset="0" stop-color="#881337"/>
       <stop offset=".5" stop-color="#be123c"/>
-      <stop offset="1" stop-color="#f472b6"/>
+      <stop offset="1" stop-color="#9cc5e6"/>
     </linearGradient>
     <linearGradient id="tag" x1="0" x2="1">
       <stop offset="0" stop-color="#e8577a"/>
-      <stop offset="1" stop-color="#f9a8d4"/>
+      <stop offset="1" stop-color="#b9d6ee"/>
     </linearGradient>
     <linearGradient id="arc" gradientUnits="userSpaceOnUse" x1="844" y1="64" x2="1036" y2="256">
       <stop offset="0" stop-color="#be123c"/>
-      <stop offset="1" stop-color="#f472b6"/>
+      <stop offset="1" stop-color="#9cc5e6"/>
     </linearGradient>
     <radialGradient id="aura">
       <stop offset="0" stop-color="#9f1239" stop-opacity="0.22"/>
       <stop offset="1" stop-color="#9f1239" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="spark">
-      <stop offset="0" stop-color="#f472b6" stop-opacity=".6"/>
-      <stop offset="1" stop-color="#f472b6" stop-opacity="0"/>
+      <stop offset="0" stop-color="#9cc5e6" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#9cc5e6" stop-opacity="0"/>
     </radialGradient>
     <style>
       .name { font: 700 64px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #e6edf3; letter-spacing: -1px; }
@@ -35,17 +35,17 @@
       .mono { font: 500 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #7d8590; }
       .lbl  { font: 600 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
       .core { font: 600 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #7d8590; }
-      .hash { font: 700 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #f472b6;
+      .hash { font: 700 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #9cc5e6;
                opacity: 0; animation: hash 32s ease-out infinite; }
       .h0   { opacity: 1; }
 
       /* Every loop animation shares one clock: 8s, started together. */
       .node, .lbl, .tok, .arcdraw, .head, .ripple, .aura {
         animation-duration: 8s; animation-iteration-count: infinite; }
-      .node { fill: #f472b6; stroke: #f472b6; transform-box: fill-box; transform-origin: center;
+      .node { fill: #9cc5e6; stroke: #9cc5e6; transform-box: fill-box; transform-origin: center;
                animation-timing-function: cubic-bezier(.2, .7, .3, 1); }
       .lbl  { fill: #e6edf3; animation-timing-function: ease-out; }
-      .tok  { fill: #f9a8d4; animation-timing-function: ease-out; }
+      .tok  { fill: #c6dff2; animation-timing-function: ease-out; }
       .arrow { fill: #7d8590; }
       .arcdraw { stroke-dasharray: 100 100; stroke-dashoffset: 0; animation-name: draw; animation-timing-function: linear; }
       .head { transform-origin: 940px 160px; animation-name: orbit; animation-timing-function: linear; }
@@ -64,16 +64,16 @@
                           25% { opacity: 1; transform: translateY(0); } 26.5% { opacity: 0; transform: translateY(-5px); }
                           100% { opacity: 0; } }
       @keyframes blink  { 50% { opacity: 0; } }
-      @keyframes n0 { 0% { fill: #f472b6; stroke: #f472b6; transform: scale(1.7); } 5% { fill: #f472b6; stroke: #f472b6; transform: scale(1); } 93.0% { fill: #f472b6; stroke: #f472b6; transform: scale(1); } 99%, 100% { fill: #0d1117; stroke: #262c36; transform: scale(1); } }
+      @keyframes n0 { 0% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1.7); } 5% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1); } 93.0% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1); } 99%, 100% { fill: #0d1117; stroke: #262c36; transform: scale(1); } }
       @keyframes l0 { 0% { fill: #e6edf3; } 5% { fill: #e6edf3; } 93.0% { fill: #e6edf3; } 99%, 100% { fill: #7d8590; } }
       @keyframes t0 { 0% { fill-opacity: 1; } 5% { fill-opacity: 1; } 93.0% { fill-opacity: 1; } 99%, 100% { fill-opacity: .3; } }
-      @keyframes n1 { 0%, 21.25% { fill: #0d1117; stroke: #262c36; transform: scale(1); } 22.75% { fill: #f472b6; stroke: #f472b6; transform: scale(1.7); } 27.25% { fill: #f472b6; stroke: #f472b6; transform: scale(1); } 93.0% { fill: #f472b6; stroke: #f472b6; transform: scale(1); } 99%, 100% { fill: #0d1117; stroke: #262c36; transform: scale(1); } }
+      @keyframes n1 { 0%, 21.25% { fill: #0d1117; stroke: #262c36; transform: scale(1); } 22.75% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1.7); } 27.25% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1); } 93.0% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1); } 99%, 100% { fill: #0d1117; stroke: #262c36; transform: scale(1); } }
       @keyframes l1 { 0%, 21.25% { fill: #7d8590; } 22.75% { fill: #e6edf3; } 27.25% { fill: #e6edf3; } 93.0% { fill: #e6edf3; } 99%, 100% { fill: #7d8590; } }
       @keyframes t1 { 0%, 21.25% { fill-opacity: .3; } 22.75% { fill-opacity: 1; } 27.25% { fill-opacity: 1; } 93.0% { fill-opacity: 1; } 99%, 100% { fill-opacity: .3; } }
-      @keyframes n2 { 0%, 42.50% { fill: #0d1117; stroke: #262c36; transform: scale(1); } 44.00% { fill: #f472b6; stroke: #f472b6; transform: scale(1.7); } 48.50% { fill: #f472b6; stroke: #f472b6; transform: scale(1); } 93.0% { fill: #f472b6; stroke: #f472b6; transform: scale(1); } 99%, 100% { fill: #0d1117; stroke: #262c36; transform: scale(1); } }
+      @keyframes n2 { 0%, 42.50% { fill: #0d1117; stroke: #262c36; transform: scale(1); } 44.00% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1.7); } 48.50% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1); } 93.0% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1); } 99%, 100% { fill: #0d1117; stroke: #262c36; transform: scale(1); } }
       @keyframes l2 { 0%, 42.50% { fill: #7d8590; } 44.00% { fill: #e6edf3; } 48.50% { fill: #e6edf3; } 93.0% { fill: #e6edf3; } 99%, 100% { fill: #7d8590; } }
       @keyframes t2 { 0%, 42.50% { fill-opacity: .3; } 44.00% { fill-opacity: 1; } 48.50% { fill-opacity: 1; } 93.0% { fill-opacity: 1; } 99%, 100% { fill-opacity: .3; } }
-      @keyframes n3 { 0%, 63.75% { fill: #0d1117; stroke: #262c36; transform: scale(1); } 65.25% { fill: #f472b6; stroke: #f472b6; transform: scale(1.7); } 69.75% { fill: #f472b6; stroke: #f472b6; transform: scale(1); } 93.0% { fill: #f472b6; stroke: #f472b6; transform: scale(1); } 99%, 100% { fill: #0d1117; stroke: #262c36; transform: scale(1); } }
+      @keyframes n3 { 0%, 63.75% { fill: #0d1117; stroke: #262c36; transform: scale(1); } 65.25% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1.7); } 69.75% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1); } 93.0% { fill: #9cc5e6; stroke: #9cc5e6; transform: scale(1); } 99%, 100% { fill: #0d1117; stroke: #262c36; transform: scale(1); } }
       @keyframes l3 { 0%, 63.75% { fill: #7d8590; } 65.25% { fill: #e6edf3; } 69.75% { fill: #e6edf3; } 93.0% { fill: #e6edf3; } 99%, 100% { fill: #7d8590; } }
       @keyframes t3 { 0%, 63.75% { fill-opacity: .3; } 65.25% { fill-opacity: 1; } 69.75% { fill-opacity: 1; } 93.0% { fill-opacity: 1; } 99%, 100% { fill-opacity: .3; } }
 
@@ -90,7 +90,7 @@
   <text x="64" y="122" class="name">Theo Hsiung</text>
   <text x="66" y="164" class="tag">AI for Science · LLM Systems · Agentic Infra</text>
   <text x="66" y="196" class="sub">Associate Research Scientist, vLLM Semantic Router · Delta Electronics · Taiwan</text>
-  <text x="66" y="262" class="mono">$ route <tspan class="tok" style="animation-name:t0">signal</tspan> <tspan class="arrow">→</tspan> <tspan class="tok" style="animation-name:t1">decision</tspan> <tspan class="arrow">→</tspan> <tspan class="tok" style="animation-name:t2">algorithm</tspan> <tspan class="arrow">→</tspan> <tspan class="tok" style="animation-name:t3">model</tspan><tspan class="caret" fill="#f472b6"> ▍</tspan></text>
+  <text x="66" y="262" class="mono">$ route <tspan class="tok" style="animation-name:t0">signal</tspan> <tspan class="arrow">→</tspan> <tspan class="tok" style="animation-name:t1">decision</tspan> <tspan class="arrow">→</tspan> <tspan class="tok" style="animation-name:t2">algorithm</tspan> <tspan class="arrow">→</tspan> <tspan class="tok" style="animation-name:t3">model</tspan><tspan class="caret" fill="#9cc5e6"> ▍</tspan></text>
 
   <!-- research loop: the arc draws clockwise from the top -->
   <circle cx="940" cy="160" r="96" fill="none" stroke="#262c36" stroke-width="2"/>
@@ -98,10 +98,10 @@
           stroke-width="3" stroke-linecap="round" transform="rotate(-90 940 160)"/>
   <g class="head">
     <circle cx="940" cy="64" r="16" fill="url(#spark)"/>
-    <circle cx="940" cy="64" r="4" fill="#f9a8d4"/>
+    <circle cx="940" cy="64" r="4" fill="#c6dff2"/>
   </g>
 
-  <circle class="ripple" cx="940" cy="160" r="40" fill="none" stroke="#f472b6" stroke-width="1.5"/>
+  <circle class="ripple" cx="940" cy="160" r="40" fill="none" stroke="#9cc5e6" stroke-width="1.5"/>
   <circle cx="940" cy="160" r="40" fill="#161b22" stroke="#262c36"/>
   <text x="940" y="156" text-anchor="middle" class="core">git commit</text>
   <text class="hash h0" style="animation-delay:-1.20s" x="940" y="174" text-anchor="middle">a3f9c1e</text>
