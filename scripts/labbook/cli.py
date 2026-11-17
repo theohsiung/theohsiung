@@ -1,7 +1,7 @@
-"""Draw the lab notebook card: python3 scripts/labbook --fixture FILE [--out DIR]
+"""Draw the lab notebook card: python3 scripts/labbook [--fixture FILE] [--out DIR]
 
-It reads GitHub search results saved as JSON and writes labbook-dark.svg and
-labbook-light.svg.
+Without --fixture it reads the user's merged pull requests from GitHub, using
+GITHUB_TOKEN when it is set. It writes labbook-dark.svg and labbook-light.svg.
 """
 
 import argparse
@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from card import render_card
+from fetch import FetchError, fetch_items
 from palette import PALETTES
 from parse import parse_items
 
@@ -19,12 +20,19 @@ from parse import parse_items
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="labbook", description=__doc__.splitlines()[0])
     parser.add_argument("--user", default=os.environ.get("GITHUB_REPOSITORY_OWNER", "theohsiung"))
-    parser.add_argument("--fixture", type=Path, required=True, help="GitHub search results saved as JSON")
+    parser.add_argument("--fixture", type=Path, help="read search results from this JSON file instead of GitHub")
     parser.add_argument("--out", type=Path, default=Path("dist"))
     parser.add_argument("--now", type=datetime.fromisoformat, help="pretend it is this UTC time (for tests)")
     args = parser.parse_args(argv)
 
-    items = json.loads(args.fixture.read_text(encoding="utf-8"))["items"]
+    if args.fixture:
+        items = json.loads(args.fixture.read_text(encoding="utf-8"))["items"]
+    else:
+        try:
+            items = fetch_items(args.user, os.environ.get("GITHUB_TOKEN"))
+        except FetchError as err:
+            print(f"labbook: {err}", file=sys.stderr)
+            return 1
     entries = parse_items(items)
     now = (args.now or datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)
 
