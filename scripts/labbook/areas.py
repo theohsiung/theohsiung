@@ -1,10 +1,10 @@
 """Sort a pull request into an area of work by keywords in its title.
 
-The areas match the Open source table in README.md. The first rule that
-matches wins, so put the more specific areas first.
+The first rule that matches wins, so the more specific areas come first and
+`routing`, which catches most remaining router work, comes last.
 """
 
-AREAS = ("runtime", "security", "harness", "perf", "protocol", "other")
+AREAS = ("runtime", "security", "harness", "routing", "perf", "protocol", "research", "upkeep", "other")
 
 RULES = (
     ("security", ("jailbreak", "security", "leak", "injection", "pii", "fail-closed", "risk_score")),
@@ -12,6 +12,9 @@ RULES = (
     ("harness", ("claude code", "plugin", "skill", "harness", "vsr", "agent")),
     ("perf", ("bench", "perf", "latency", "alloc", "regression", "dedup", "bound the")),
     ("protocol", ("looper", "header", "protocol", "sse", "stream", "response", "codec", "chat completions")),
+    ("research", ("[research]", "hypothes", "ledger", "whitepaper", "knowledge graph", "thinking")),
+    ("upkeep", ("[docs]", "docs:", "[website]", "[community]", "[test]", "e2e", " test", "leaderboard")),
+    ("routing", ("[router]", "routing", "route", "decision", "signal", "cache", "session", "classify", "model")),
 )
 
 
