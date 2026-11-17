@@ -33,4 +33,6 @@ def render_chart(buckets: list[tuple[date, Counter]], anims: Anims) -> str:
         if segments:
             grow = appear(BAR_START + i * BAR_STEP, hidden="transform:scaleY(0)", shown="transform:scaleY(1)")
             out.append(f'<g {anims.attr(grow, base="transform:scaleY(1);", cls="grow")}>{"".join(segments)}</g>')
+    out.append(el("text", f"{len(buckets)}w ago", x=CHART_X0, y=CHART_BASE + 18, class_="tiny"))
+    out.append(el("text", "this week", x=CHART_X1, y=CHART_BASE + 18, class_="tiny", text_anchor="end"))
     return "".join(out)
