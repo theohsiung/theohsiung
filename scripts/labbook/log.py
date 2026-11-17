@@ -32,4 +32,10 @@ def render_log(entries: list[Entry], now: datetime, anims: Anims) -> str:
         row = render_row(entry, y, now)
         style = anims.attr(appear(ROW_START + i * ROW_STEP, hidden=HIDDEN, shown=SHOWN), base=SHOWN + ";")
         rows.append(f"<g {style}>{row}</g>")
+    cursor_y = LOG_Y + len(shown) * LOG_STEP
+    blink = [(0.0, "opacity:0")] + [
+        (ROW_START + len(shown) * ROW_STEP + k * 0.5, "opacity:1" if k % 2 == 0 else "opacity:0") for k in range(14)
+    ]
+    cursor = el("rect", x=LOG_X + 1, y=cursor_y - 13, width=9, height=16, class_="cursor")
+    rows.append(f'<g {anims.attr(blink, base="opacity:1;")}>{cursor}</g>')
     return "".join(rows)
