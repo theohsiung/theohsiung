@@ -24,16 +24,20 @@ PALETTES = {
         "text": "#f7f6d8", "muted": "#a9c39a", "fin": "#ffffff",
         "wine": "#eee82c", "wine_text": "#eee82c",
         "blue": "#91cb3e", "blue_line": "#91cb3e", "blue_text": "#c5e38f",
-        "tag": ("#eee82c", "#91cb3e"),
-        "blush": "#91cb3e", "body": "#f7f6d8", "ink": "#19381f", "sparkle": "#eee82c",
+        "tag": ("#f5ef3a", "#7ee05a"),
+        "blush": "#91cb3e", "ink": "#19381f", "sparkle": "#eee82c",
+        "body_hi": "#d9f99d", "body": "#3fb06a", "body_lo": "#145c35", "ear": "#eee82c", "iris": "#19381f",
+        "cheek": "#ff9e7a", "mouth": "#7a2e2e", "shadow": "#000000", "key": "#eee82c", "bokeh": "#91cb3e",
     },
     "light": {
         "bg": "#f8faf0", "grid": "#e7efd8", "panel": "#eef5e2", "track": "#cfe0b8",
         "text": "#19381f", "muted": "#4c934c", "fin": "#ffffff",
         "wine": "#d4cd1a", "wine_text": "#7a760c",
         "blue": "#91cb3e", "blue_line": "#28965a", "blue_text": "#4c934c",
-        "tag": ("#4c934c", "#19381f"),
-        "blush": "#eee82c", "body": "#ffffff", "ink": "#19381f", "sparkle": "#d4cd1a",
+        "tag": ("#28965a", "#0f5f35"),
+        "blush": "#eee82c", "ink": "#19381f", "sparkle": "#d4cd1a",
+        "body_hi": "#e6fcb5", "body": "#28965a", "body_lo": "#145c35", "ear": "#eee82c", "iris": "#19381f",
+        "cheek": "#ff8a65", "mouth": "#7a2e2e", "shadow": "#19381f", "key": "#fff3a3", "bokeh": "#91cb3e",
     },
 }
 BAR = ("#4c934c", "#91cb3e", "#eee82c")
@@ -317,8 +321,76 @@ def leaf(x: float, y: float, s: float) -> str:
             f'<path d="M{x - s} {y + s} L{x + s * 0.4} {y - s * 0.4}" stroke="{"#19381f"}" stroke-opacity=".35" stroke-width="1"/>')
 
 
+BOKEH = [(120, 60, 46, 0.0), (330, 250, 34, 4.0), (520, 40, 28, 8.0), (760, 300, 40, 12.0), (1120, 260, 52, 16.0)]
+
+
+def lighting(p: dict, an: Anims) -> str:
+    """Film-style lighting: a warm key light behind the title and soft out-of-focus bokeh drifting past."""
+    out = [f'<defs><radialGradient id="key" cx="0.35" cy="0.3" r="0.6">'
+           f'<stop offset="0" stop-color="{p["key"]}" stop-opacity=".55"/><stop offset="1" stop-color="{p["key"]}" stop-opacity="0"/>'
+           f'</radialGradient><filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter></defs>'
+           f'<rect width="1200" height="320" fill="url(#key)"/>']
+    for x, y, r, t in BOKEH:
+        drift = [(0.0, "transform:translate(0,0)"), (CYCLE / 2, "transform:translate(18px,-10px)"), (CYCLE, "transform:translate(0,0)")]
+        out.append(f'<circle {an.attr(drift)} cx="{x}" cy="{y}" r="{r}" fill="{p["bokeh"]}" opacity=".16" filter="url(#soft)"/>')
+    return "".join(out)
+
+
+def mascot(p: dict, an: Anims) -> str:
+    """A shaded 3D-style blob mascot that hops with squash and stretch, looks around and blinks."""
+    cx, cy = 596, 92
+    defs = (f'<defs>'
+            f'<radialGradient id="body" cx="0.35" cy="0.28" r="0.85">'
+            f'<stop offset="0" stop-color="{p["body_hi"]}"/><stop offset=".45" stop-color="{p["body"]}"/><stop offset="1" stop-color="{p["body_lo"]}"/></radialGradient>'
+            f'<radialGradient id="eye" cx="0.4" cy="0.35" r="0.75"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe8dc"/></radialGradient>'
+            f'<radialGradient id="cheek"><stop offset="0" stop-color="{p["cheek"]}" stop-opacity=".75"/><stop offset="1" stop-color="{p["cheek"]}" stop-opacity="0"/></radialGradient>'
+            f'<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>'
+            f'</defs>')
+
+    # one hop per 5 seconds: anticipate, launch, hang, land, settle
+    hop = []
+    for k in range(4):
+        t = k * 5.0
+        hop += [(t, "transform:translateY(0) scale(1,1)"), (t + 0.25, "transform:translateY(0) scale(1.14,.84)"),
+                (t + 0.5, "transform:translateY(-24px) scale(.9,1.12)"), (t + 0.8, "transform:translateY(-30px) scale(1,1)"),
+                (t + 1.1, "transform:translateY(0) scale(1.16,.82)"), (t + 1.3, "transform:translateY(0) scale(.96,1.05)"),
+                (t + 1.5, "transform:translateY(0) scale(1,1)")]
+    shadow_frames = []
+    for k in range(4):
+        t = k * 5.0
+        shadow_frames += [(t, "transform:scale(1);opacity:.55"), (t + 0.25, "transform:scale(1.15);opacity:.6"),
+                          (t + 0.8, "transform:scale(.6);opacity:.25"), (t + 1.1, "transform:scale(1.2);opacity:.6"),
+                          (t + 1.5, "transform:scale(1);opacity:.55")]
+    shadow = (f'<ellipse {an.attr(shadow_frames, base="opacity:.5;", cls="fb")} cx="{cx}" cy="{cy + 44}" rx="30" ry="5" '
+              f'fill="{p["shadow"]}" filter="url(#shadow)"/>')
+
+    body = (f'<path d="M{cx - 34} {cy + 38} C{cx - 40} {cy} {cx - 30} {cy - 30} {cx - 22} {cy - 40} L{cx - 13} {cy - 24} '
+            f'C{cx - 4} {cy - 28} {cx + 4} {cy - 28} {cx + 13} {cy - 24} L{cx + 22} {cy - 40} '
+            f'C{cx + 30} {cy - 30} {cx + 40} {cy} {cx + 34} {cy + 38} Q{cx} {cy + 46} {cx - 34} {cy + 38} Z" fill="url(#body)"/>'
+            f'<path d="M{cx - 22} {cy - 33} L{cx - 16} {cy - 24} L{cx - 23} {cy - 22} Z" fill="{p["ear"]}" opacity=".8"/>'
+            f'<path d="M{cx + 22} {cy - 33} L{cx + 16} {cy - 24} L{cx + 23} {cy - 22} Z" fill="{p["ear"]}" opacity=".8"/>'
+            f'<ellipse cx="{cx - 14}" cy="{cy - 16}" rx="9" ry="5" fill="#ffffff" opacity=".35" transform="rotate(-25 {cx - 14} {cy - 16})"/>'
+            f'<ellipse cx="{cx - 21}" cy="{cy + 14}" rx="8" ry="5" fill="url(#cheek)"/>'
+            f'<ellipse cx="{cx + 21}" cy="{cy + 14}" rx="8" ry="5" fill="url(#cheek)"/>')
+
+    look = [(0.0, "transform:translateX(0)"), (2.2, "transform:translateX(0)"), (2.5, "transform:translateX(-2.5px)"),
+            (4.2, "transform:translateX(-2.5px)"), (4.5, "transform:translateX(2.5px)"), (7.0, "transform:translateX(2.5px)"),
+            (7.3, "transform:translateX(0)")]
+    pupils = "".join(f'<circle cx="{x}" cy="{cy + 2}" r="4.6" fill="{p["iris"]}"/><circle cx="{x}" cy="{cy + 2}" r="2.4" fill="#0b1a10"/>'
+                     f'<circle cx="{x - 1.6}" cy="{cy - 0.4}" r="1.5" fill="#ffffff"/><circle cx="{x + 1.6}" cy="{cy + 3.6}" r=".7" fill="#ffffff"/>'
+                     for x in (cx - 11, cx + 11))
+    blink = [(0.0, "transform:scaleY(1)"), (3.0, "transform:scaleY(1)"), (3.1, "transform:scaleY(.08)"), (3.22, "transform:scaleY(1)"),
+             (13.0, "transform:scaleY(1)"), (13.1, "transform:scaleY(.08)"), (13.22, "transform:scaleY(1)")]
+    eyes = (f'<g {an.attr(blink, base="", cls="fb")}>'
+            f'<ellipse cx="{cx - 11}" cy="{cy}" rx="8" ry="9.5" fill="url(#eye)"/><ellipse cx="{cx + 11}" cy="{cy}" rx="8" ry="9.5" fill="url(#eye)"/>'
+            f'<g {an.attr(look)}>{pupils}</g></g>')
+    mouth = (f'<path d="M{cx - 5} {cy + 13} Q{cx} {cy + 19} {cx + 5} {cy + 13}" fill="{p["mouth"]}" stroke="{p["iris"]}" '
+             f'stroke-width="1.4" stroke-linejoin="round"/>')
+    return defs + shadow + f'<g {an.attr(hop, base="", cls="fbot")}>{body}{eyes}{mouth}</g>'
+
+
 def decoration(p: dict, an: Anims) -> str:
-    """Twinkling sparkles, and a blob mascot that bobs, blinks and sends up a leaf."""
+    """Twinkling sparkles, the mascot, and a leaf that floats up after each hop."""
     out = []
     for x, y, r, t in SPARKLES:
         frames = []
@@ -327,27 +399,11 @@ def decoration(p: dict, an: Anims) -> str:
             frames += [(t0, "opacity:.25;transform:scale(.6)"), (t0 + 0.5, "opacity:1;transform:scale(1.15)"),
                        (t0 + 1.2, "opacity:.25;transform:scale(.6)")]
         out.append(f'<g fill="{p["sparkle"]}" {an.attr(frames, base="opacity:.8;", cls="fb")}>{sparkle(x, y, r)}</g>')
-
-    cx, cy = 596, 96
-    bob = [(k * 1.25, f"transform:translateY({-5 if k % 2 else 0}px)") for k in range(17)]
-    face = (f'<ellipse cx="{cx}" cy="{cy + 40}" rx="26" ry="4" fill="{p["track"]}" opacity=".5"/>'
-            f'<g {an.attr(bob, base="")}>'
-            f'<path d="M{cx - 30} {cy + 30} C{cx - 34} {cy - 4} {cx - 26} {cy - 30} {cx - 18} {cy - 36} L{cx - 12} {cy - 22} '
-            f'C{cx - 4} {cy - 26} {cx + 4} {cy - 26} {cx + 12} {cy - 22} L{cx + 18} {cy - 36} '
-            f'C{cx + 26} {cy - 30} {cx + 34} {cy - 4} {cx + 30} {cy + 30} Z" fill="{p["body"]}" stroke="{p["wine"]}" stroke-width="2.5" stroke-linejoin="round"/>'
-            f'<ellipse cx="{cx - 17}" cy="{cy + 10}" rx="6" ry="3.5" fill="{p["blush"]}" opacity=".85"/>'
-            f'<ellipse cx="{cx + 17}" cy="{cy + 10}" rx="6" ry="3.5" fill="{p["blush"]}" opacity=".85"/>')
-    blink = [(0.0, "transform:scaleY(1)"), (3.0, "transform:scaleY(1)"), (3.12, "transform:scaleY(.1)"),
-             (3.24, "transform:scaleY(1)"), (11.0, "transform:scaleY(1)"), (11.12, "transform:scaleY(.1)"),
-             (11.24, "transform:scaleY(1)")]
-    eyes = (f'<g {an.attr(blink, base="", cls="fb")} fill="{p["ink"]}">'
-            f'<ellipse cx="{cx - 10}" cy="{cy}" rx="3.2" ry="4.2"/><ellipse cx="{cx + 10}" cy="{cy}" rx="3.2" ry="4.2"/></g>')
-    mouth = f'<path d="M{cx - 4} {cy + 8} Q{cx - 2} {cy + 11} {cx} {cy + 8} Q{cx + 2} {cy + 11} {cx + 4} {cy + 8}" fill="none" stroke="{p["ink"]}" stroke-width="1.6" stroke-linecap="round"/>'
-    out.append(face + eyes + mouth + "</g>")
-    for t in (4.0, 14.0):
+    out.append(mascot(p, an))
+    for t in (1.0, 11.0):
         rise = [(0.0, "opacity:0;transform:translateY(0)"), (t, "opacity:0;transform:translateY(0)"),
                 (t + 0.3, "opacity:1;transform:translateY(-6px)"), (t + 2.0, "opacity:0;transform:translateY(-34px)")]
-        out.append(f'<g fill="{p["wine"]}" {an.attr(rise, base="opacity:0;")}>{leaf(cx + 30, cy - 34, 7)}</g>')
+        out.append(f'<g fill="{p["wine"]}" {an.attr(rise, base="opacity:0;")}>{leaf(626, 50, 7)}</g>')
     return "".join(out)
 
 
@@ -375,6 +431,7 @@ def render(p: dict) -> str:
          + typed("$ meta-research run water_cooling", SCENE_A[0] + 0.2, p, an) + scene_a(p, an))
     b = (scene_header("vSR", "vLLM Semantic Router inside Claude Code", 1, p)
          + typed("$ claude --plugin vsr", SCENE_B[0] + 0.2, p, an) + scene_b(p, an))
+    light = lighting(p, an)
     deco = decoration(p, an)
     keyframes = "\n      ".join(an.rules)
     mono = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
@@ -405,6 +462,7 @@ def render(p: dict) -> str:
       .fb {{ transform-box: fill-box; transform-origin: center; }}
       .fl {{ transform-box: fill-box; transform-origin: left center; }}
       .fr {{ transform-box: fill-box; transform-origin: right center; }}
+      .fbot {{ transform-box: fill-box; transform-origin: center bottom; }}
       {keyframes}
 
       @media (prefers-reduced-motion: reduce) {{ * {{ animation: none !important; }} }}
@@ -413,6 +471,7 @@ def render(p: dict) -> str:
 
   <rect width="1200" height="320" rx="16" fill="{p["bg"]}"/>
   <rect width="1200" height="320" rx="16" fill="url(#dots)"/>
+  <g clip-path="url(#round)">{light}</g>
   <rect width="1200" height="4" fill="url(#bar)" clip-path="url(#round)"/>
 
   <text x="64" y="122" class="name">Theo Hsiung</text>

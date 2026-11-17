@@ -17,7 +17,11 @@ def render_chart(buckets: list[tuple[date, Counter]], anims: Anims) -> str:
     width = slot * 0.62
     peak = max([sum(c.values()) for _, c in buckets] + [1])
     unit = (CHART_BASE - CHART_TOP) / peak
-    out = [el("text", "merged per week, by area", x=CHART_X0, y=CHART_TOP - 12, class_="small")]
+    out = ['<defs><linearGradient id="gloss" x1="0" x2="1">'
+           '<stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset=".3" stop-color="#ffffff" stop-opacity=".45"/>'
+           '<stop offset=".55" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#000000" stop-opacity=".18"/>'
+           '</linearGradient></defs>',
+           el("text", "merged per week, by area", x=CHART_X0, y=CHART_TOP - 12, class_="small")]
     for i, (_, counts) in enumerate(buckets):
         x = CHART_X0 + i * slot + (slot - width) / 2
         out.append(el("rect", x=f"{x:.1f}", y=CHART_TOP, width=f"{width:.1f}", height=CHART_BASE - CHART_TOP,
@@ -33,7 +37,8 @@ def render_chart(buckets: list[tuple[date, Counter]], anims: Anims) -> str:
         if segments:
             grow = appear(BAR_START + i * BAR_STEP, hidden="transform:scaleY(0)", shown="transform:scaleY(1)")
             clip = f'<clipPath id="bar{i}"><rect x="{x:.1f}" y="{CHART_TOP}" width="{width:.1f}" height="{CHART_BASE - CHART_TOP}" rx="{width / 2:.1f}"/></clipPath>'
-            out.append(f'{clip}<g clip-path="url(#bar{i})"><g {anims.attr(grow, base="transform:scaleY(1);", cls="grow")}>{"".join(segments)}</g></g>')
+            shine = el("rect", x=f"{x:.1f}", y=f"{y:.1f}", width=f"{width:.1f}", height=f"{CHART_BASE - y:.1f}", fill="url(#gloss)")
+            out.append(f'{clip}<g clip-path="url(#bar{i})"><g {anims.attr(grow, base="transform:scaleY(1);", cls="grow")}>{"".join(segments)}{shine}</g></g>')
     out.append(el("text", f"{len(buckets)}w ago", x=CHART_X0, y=CHART_BASE + 18, class_="tiny"))
     out.append(el("text", "this week", x=CHART_X1, y=CHART_BASE + 18, class_="tiny", text_anchor="end"))
     return "".join(out)
