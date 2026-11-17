@@ -20,6 +20,11 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(len(refs), len(set(refs)))
         self.assertEqual(len(refs), 9)
 
+    def test_excluded_repos_are_dropped(self):
+        refs = [e.ref for e in parse_items(items(), exclude=("theohsiung/theohsiung",))]
+        self.assertNotIn("theohsiung/theohsiung#8", refs)
+        self.assertEqual(len(refs), 8)
+
     def test_newest_first(self):
         dates = [e.merged_at for e in parse_items(items())]
         self.assertEqual(dates, sorted(dates, reverse=True))

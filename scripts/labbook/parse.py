@@ -16,17 +16,13 @@ def parse_item(item: dict) -> Entry | None:
     return Entry(repo, item["number"], title, datetime.fromisoformat(merged.replace("Z", "+00:00")), classify(title))
 
 
-def parse_items(items: list[dict]) -> list[Entry]:
-    """Newest first, one entry per pull request.
-
-    Search pages can overlap when results change between requests, so the
-    same pull request may come back twice.
-    """
+def parse_items(items: list[dict], exclude: tuple[str, ...] = ()) -> list[Entry]:
+    """Newest first, one entry per pull request, without the repositories in `exclude`."""
     seen: set[str] = set()
     entries = []
     for item in items:
         entry = parse_item(item)
-        if entry is None or entry.ref in seen:
+        if entry is None or entry.repo in exclude or entry.ref in seen:
             continue
         seen.add(entry.ref)
         entries.append(entry)
