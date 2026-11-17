@@ -91,10 +91,12 @@ Elsewhere: [BerriAI/moyai#470](https://github.com/BerriAI/moyai/pull/470) centra
 
 <img src="https://img.shields.io/badge/LAB%20NOTEBOOK-881337?style=for-the-badge&labelColor=0d1117" alt="Lab notebook"/>
 
+<a href="https://github.com/pulls?q=is%3Apr+author%3Atheohsiung+is%3Amerged">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/theohsiung/theohsiung/labbook/labbook-dark.svg"/>
   <img src="https://raw.githubusercontent.com/theohsiung/theohsiung/labbook/labbook-light.svg" alt="Lab notebook: my newest merged pull requests, typed in one line at a time, and merged pull requests per week by area of work. Redrawn daily by scripts/labbook." width="100%"/>
 </picture>
+</a>
 
 &nbsp;
 
