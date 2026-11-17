@@ -47,6 +47,8 @@ I work at Delta Electronics in Taiwan and serve as an Associate Research Scienti
 </tr></tbody>
 </table>
 
+<sub>On the side: <a href="https://github.com/theohsiung/at2_skills">at2_skills</a>, Claude Code skills that turn git commits, Claude Code sessions and daily notes into daily summaries and weekly reports.</sub>
+
 &nbsp;
 
 <img src="https://img.shields.io/badge/WRITING-881337?style=for-the-badge&labelColor=0d1117" alt="Writing"/>
