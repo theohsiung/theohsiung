@@ -1,6 +1,18 @@
+import io
+import json
 import unittest
 
-from fetch import headers, search_url
+from fetch import PER_PAGE, fetch_items, headers, search_url
+
+
+def fake_opener(pages):
+    calls = []
+
+    def opener(request, timeout):
+        calls.append(request.full_url)
+        return io.BytesIO(json.dumps({"items": pages[len(calls) - 1]}).encode())
+
+    return opener, calls
 
 
 class FetchTest(unittest.TestCase):
@@ -12,6 +24,11 @@ class FetchTest(unittest.TestCase):
     def test_token_is_optional(self):
         self.assertNotIn("Authorization", headers(None))
         self.assertEqual(headers("abc")["Authorization"], "Bearer abc")
+
+    def test_stops_after_a_short_page(self):
+        opener, calls = fake_opener([[{}] * PER_PAGE, [{}] * 3])
+        self.assertEqual(len(fetch_items("u", opener=opener)), PER_PAGE + 3)
+        self.assertEqual(len(calls), 2)
 
 
 if __name__ == "__main__":
