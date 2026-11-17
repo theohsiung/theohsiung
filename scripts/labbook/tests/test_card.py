@@ -22,6 +22,11 @@ class CardTest(unittest.TestCase):
             with self.subTest(theme=theme):
                 self.assertEqual(self.render(self.entries, theme).tag, f"{NS}svg")
 
+    def test_title_and_description_for_screen_readers(self):
+        root = self.render(self.entries)
+        self.assertEqual(root.find(f"{NS}title").text, "theohsiung's lab notebook")
+        self.assertIn("8 merged pull requests across 2 repos", root.find(f"{NS}desc").text)
+
     def test_shows_the_newest_rows_only(self):
         text = render_card(self.entries, "theohsiung", NOW, PALETTES["dark"])
         self.assertIn("semantic-router#6113", text)
