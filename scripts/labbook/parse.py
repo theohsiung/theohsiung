@@ -17,6 +17,17 @@ def parse_item(item: dict) -> Entry | None:
 
 
 def parse_items(items: list[dict]) -> list[Entry]:
-    """Newest first, without pull requests that were never merged."""
-    entries = [e for e in map(parse_item, items) if e is not None]
+    """Newest first, one entry per pull request.
+
+    Search pages can overlap when results change between requests, so the
+    same pull request may come back twice.
+    """
+    seen: set[str] = set()
+    entries = []
+    for item in items:
+        entry = parse_item(item)
+        if entry is None or entry.ref in seen:
+            continue
+        seen.add(entry.ref)
+        entries.append(entry)
     return sorted(entries, key=lambda e: e.merged_at, reverse=True)

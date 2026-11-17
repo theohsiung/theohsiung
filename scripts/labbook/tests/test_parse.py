@@ -15,6 +15,11 @@ class ParseTest(unittest.TestCase):
     def test_unmerged_is_skipped(self):
         self.assertIsNone(parse_item(items()[-1]))
 
+    def test_duplicates_are_dropped(self):
+        refs = [e.ref for e in parse_items(items())]
+        self.assertEqual(len(refs), len(set(refs)))
+        self.assertEqual(len(refs), 9)
+
     def test_newest_first(self):
         dates = [e.merged_at for e in parse_items(items())]
         self.assertEqual(dates, sorted(dates, reverse=True))
