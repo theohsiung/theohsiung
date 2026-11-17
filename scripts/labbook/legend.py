@@ -8,12 +8,12 @@ from model import Entry
 from palette import AREA_COLORS
 from svg import el
 
-COLUMNS = 3
+COLUMNS = 4
 
 
 def render_legend(entries: list[Entry]) -> str:
     totals = Counter(e.area for e in entries)
-    shown = [a for a in AREAS if totals[a]]
+    shown = [a for a in AREAS if totals[a] and a != "other"]  # other is gray and needs no key
     col = (CHART_X1 - CHART_X0) / COLUMNS
     out = []
     for i, area in enumerate(shown):
