@@ -5,7 +5,7 @@ Run `python3 scripts/banner.py` after changing a palette or a scene below.
 The banner alternates two scenes on one 20-second clock:
 
 1. meta-research: an agent runs experiments on a liquid-cooling cold plate.
-   Each experiment shows the design's heatmap (wine = hot, powder blue = cool)
+   Each experiment shows the design's heatmap (pink = hot, mint = cool)
    and adds a point to the thermal-resistance vs. pressure-drop chart; the
    Pareto frontier moves toward the lower left.
 2. vSR: prompts pass through vLLM Semantic Router inside Claude Code. Each one
@@ -20,22 +20,24 @@ from pathlib import Path
 
 PALETTES = {
     "dark": {
-        "bg": "#0d1117", "grid": "#1c2129", "panel": "#161b22", "track": "#30363d",
-        "text": "#e6edf3", "muted": "#7d8590", "fin": "#ffffff",
-        "wine": "#be123c", "wine_text": "#e8577a",
-        "blue": "#a6cdec", "blue_line": "#a6cdec", "blue_text": "#c6dff2",
-        "tag": ("#e8577a", "#b9d6ee"),
+        "bg": "#1f1a2e", "grid": "#2e2740", "panel": "#2a2340", "track": "#4a3f63",
+        "text": "#fdf2f8", "muted": "#b8a9cf", "fin": "#ffffff",
+        "wine": "#f472b6", "wine_text": "#f9a8d4",
+        "blue": "#a5d8ff", "blue_line": "#a5d8ff", "blue_text": "#cfe8ff",
+        "tag": ("#f9a8d4", "#c4b5fd"),
+        "blush": "#f9a8d4", "body": "#fdf2f8", "ink": "#1f1a2e", "sparkle": "#fde68a",
     },
     "light": {
-        "bg": "#ffffff", "grid": "#e4e7eb", "panel": "#f6f8fa", "track": "#d0d7de",
-        "text": "#1f2328", "muted": "#6e7781", "fin": "#ffffff",
-        "wine": "#be123c", "wine_text": "#881337",
-        "blue": "#a6cdec", "blue_line": "#4a78a6", "blue_text": "#4a78a6",
-        "tag": ("#881337", "#4a78a6"),
+        "bg": "#fff7fb", "grid": "#fce7f3", "panel": "#fdf2f8", "track": "#f5d0e6",
+        "text": "#5b3a6b", "muted": "#a58bb3", "fin": "#ffffff",
+        "wine": "#f472b6", "wine_text": "#db2777",
+        "blue": "#a5d8ff", "blue_line": "#7c9ef0", "blue_text": "#6d83d6",
+        "tag": ("#ec4899", "#a78bfa"),
+        "blush": "#f9a8d4", "body": "#ffffff", "ink": "#5b3a6b", "sparkle": "#f59e0b",
     },
 }
-BAR = ("#881337", "#be123c", "#a6cdec")
-HEAT = [(0.0, "#a6cdec"), (0.4, "#a78bb5"), (0.7, "#be123c"), (1.0, "#881337")]  # cool -> hot
+BAR = ("#f9a8d4", "#c4b5fd", "#a7f3d0")
+HEAT = [(0.0, "#a7f3d0"), (0.4, "#c4b5fd"), (0.7, "#f9a8d4"), (1.0, "#ec4899")]  # cool -> hot
 
 CYCLE = 20.0
 SCENE_A = (0.0, 9.4)  # visible window; each edge fades over FADE
@@ -174,7 +176,7 @@ def scene_a(p: dict, an: Anims) -> str:
         out.append(f'<g {style}>{"".join(cells)}{fins(layout, p)}</g>')
     out.append(f'<text x="{HX}" y="256" class="small">cold plate</text>'
                f'<text x="{HX + COLS * CELL}" y="256" class="small" text-anchor="end">'
-               f'<tspan fill="{p["blue"]}">■</tspan> cool  <tspan fill="{p["wine"]}">■</tspan> hot</text>')
+               f'<tspan fill="{HEAT[0][1]}">■</tspan> cool  <tspan fill="{HEAT[-1][1]}">■</tspan> hot</text>')
 
     # chart axes
     mid_y = (PY0 + PY1) / 2
@@ -298,6 +300,56 @@ def scene_b(p: dict, an: Anims) -> str:
     return "".join(out)
 
 
+# ---------------------------------------------------------------- decoration
+SPARKLES = [(486, 58, 9, 0.0), (652, 132, 7, 1.3), (30, 44, 8, 2.6), (430, 238, 6, 3.9), (520, 286, 7, 5.2)]
+
+
+def sparkle(x: float, y: float, r: float) -> str:
+    """A four-pointed star."""
+    k = r * 0.28
+    return (f'<path d="M{x} {y - r} Q{x + k} {y - k} {x + r} {y} Q{x + k} {y + k} {x} {y + r} '
+            f'Q{x - k} {y + k} {x - r} {y} Q{x - k} {y - k} {x} {y - r} Z"/>')
+
+
+def heart(x: float, y: float, s: float) -> str:
+    return (f'<path d="M{x} {y + s * 0.9} C{x - s * 1.4} {y - s * 0.1} {x - s * 0.6} {y - s * 1.1} {x} {y - s * 0.35} '
+            f'C{x + s * 0.6} {y - s * 1.1} {x + s * 1.4} {y - s * 0.1} {x} {y + s * 0.9} Z"/>')
+
+
+def decoration(p: dict, an: Anims) -> str:
+    """Twinkling sparkles, and a blob mascot that bobs, blinks and sends up a heart."""
+    out = []
+    for x, y, r, t in SPARKLES:
+        frames = []
+        for k in range(4):
+            t0 = (t + k * 5.0) % CYCLE
+            frames += [(t0, "opacity:.25;transform:scale(.6)"), (t0 + 0.5, "opacity:1;transform:scale(1.15)"),
+                       (t0 + 1.2, "opacity:.25;transform:scale(.6)")]
+        out.append(f'<g fill="{p["sparkle"]}" {an.attr(frames, base="opacity:.8;", cls="fb")}>{sparkle(x, y, r)}</g>')
+
+    cx, cy = 596, 96
+    bob = [(k * 1.25, f"transform:translateY({-5 if k % 2 else 0}px)") for k in range(17)]
+    face = (f'<ellipse cx="{cx}" cy="{cy + 40}" rx="26" ry="4" fill="{p["track"]}" opacity=".5"/>'
+            f'<g {an.attr(bob, base="")}>'
+            f'<path d="M{cx - 30} {cy + 30} C{cx - 34} {cy - 4} {cx - 26} {cy - 30} {cx - 18} {cy - 36} L{cx - 12} {cy - 22} '
+            f'C{cx - 4} {cy - 26} {cx + 4} {cy - 26} {cx + 12} {cy - 22} L{cx + 18} {cy - 36} '
+            f'C{cx + 26} {cy - 30} {cx + 34} {cy - 4} {cx + 30} {cy + 30} Z" fill="{p["body"]}" stroke="{p["wine"]}" stroke-width="2.5" stroke-linejoin="round"/>'
+            f'<ellipse cx="{cx - 17}" cy="{cy + 10}" rx="6" ry="3.5" fill="{p["blush"]}" opacity=".85"/>'
+            f'<ellipse cx="{cx + 17}" cy="{cy + 10}" rx="6" ry="3.5" fill="{p["blush"]}" opacity=".85"/>')
+    blink = [(0.0, "transform:scaleY(1)"), (3.0, "transform:scaleY(1)"), (3.12, "transform:scaleY(.1)"),
+             (3.24, "transform:scaleY(1)"), (11.0, "transform:scaleY(1)"), (11.12, "transform:scaleY(.1)"),
+             (11.24, "transform:scaleY(1)")]
+    eyes = (f'<g {an.attr(blink, base="", cls="fb")} fill="{p["ink"]}">'
+            f'<ellipse cx="{cx - 10}" cy="{cy}" rx="3.2" ry="4.2"/><ellipse cx="{cx + 10}" cy="{cy}" rx="3.2" ry="4.2"/></g>')
+    mouth = f'<path d="M{cx - 4} {cy + 8} Q{cx - 2} {cy + 11} {cx} {cy + 8} Q{cx + 2} {cy + 11} {cx + 4} {cy + 8}" fill="none" stroke="{p["ink"]}" stroke-width="1.6" stroke-linecap="round"/>'
+    out.append(face + eyes + mouth + "</g>")
+    for t in (4.0, 14.0):
+        rise = [(0.0, "opacity:0;transform:translateY(0)"), (t, "opacity:0;transform:translateY(0)"),
+                (t + 0.3, "opacity:1;transform:translateY(-6px)"), (t + 2.0, "opacity:0;transform:translateY(-34px)")]
+        out.append(f'<g fill="{p["wine"]}" {an.attr(rise, base="opacity:0;")}>{heart(cx + 30, cy - 34, 7)}</g>')
+    return "".join(out)
+
+
 # ---------------------------------------------------------------- banner
 def typed(command: str, start: float, p: dict, an: Anims) -> str:
     """A command line typed out from `start`, revealed by a cover that shrinks one character at a time."""
@@ -322,9 +374,10 @@ def render(p: dict) -> str:
          + typed("$ meta-research run water_cooling", SCENE_A[0] + 0.2, p, an) + scene_a(p, an))
     b = (scene_header("vSR", "vLLM Semantic Router inside Claude Code", 1, p)
          + typed("$ claude --plugin vsr", SCENE_B[0] + 0.2, p, an) + scene_b(p, an))
+    deco = decoration(p, an)
     keyframes = "\n      ".join(an.rules)
     mono = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-    sans = '-apple-system, "Segoe UI", Helvetica, Arial, sans-serif'
+    sans = 'ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", "Nunito", -apple-system, "Segoe UI", sans-serif'
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-labelledby="t d">
   <title id="t">Theo Hsiung</title>
   <desc id="d">AI for Science, LLM systems and agentic infrastructure. Two alternating scenes: an agent optimizing a liquid-cooling cold plate, pushing the Pareto frontier of thermal resistance and pressure drop; and vLLM Semantic Router inside Claude Code sending each prompt to the right model, masking a secret, and holding a risky Bash command.</desc>
@@ -335,9 +388,9 @@ def render(p: dict) -> str:
     <linearGradient id="bar" x1="0" x2="1"><stop offset="0" stop-color="{BAR[0]}"/><stop offset=".5" stop-color="{BAR[1]}"/><stop offset="1" stop-color="{BAR[2]}"/></linearGradient>
     <linearGradient id="tag" x1="0" x2="1"><stop offset="0" stop-color="{p["tag"][0]}"/><stop offset="1" stop-color="{p["tag"][1]}"/></linearGradient>
     <style>
-      .name {{ font: 700 64px {sans}; fill: {p["text"]}; letter-spacing: -1px; }}
+      .name {{ font: 800 64px {sans}; fill: {p["text"]}; letter-spacing: -1px; }}
       .tag {{ font: 600 22px {sans}; fill: url(#tag); }}
-      .sub {{ font: 400 16px {sans}; fill: {p["muted"]}; }}
+      .sub {{ font: 400 15px {sans}; fill: {p["muted"]}; }}
       .mono {{ font: 500 14px {mono}; fill: {p["muted"]}; }}
       .title {{ font: 700 13px {mono}; fill: {p["text"]}; }}
       .subtitle {{ font-weight: 400; fill: {p["muted"]}; }}
@@ -364,6 +417,8 @@ def render(p: dict) -> str:
   <text x="64" y="122" class="name">Theo Hsiung</text>
   <text x="66" y="164" class="tag">AI for Science · LLM Systems · Agentic Infra</text>
   <text x="66" y="196" class="sub">Associate Research Scientist, vLLM Semantic Router · Delta Electronics · Taiwan</text>
+
+  {deco}
 
   <g {a_style}>{a}</g>
   <g {b_style}>{b}</g>
