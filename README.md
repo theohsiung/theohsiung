@@ -2,7 +2,7 @@
      theohsiung / theohsiung — profile README
      Visual system: SVG banner (assets/) + shields for-the-badge section headers.
      GitHub strips CSS, so all design lives in images. Every badge is static
-     (no rate-limited stats cards). Palette: #19381f (forest) · #53a548 (green) · #eee82c (lemon). Banner colors live in scripts/banner.py.
+     (no rate-limited stats cards). Palette: #19381f (forest) · #28965a (green) · #eee82c (lemon). Banner colors live in scripts/banner.py.
      The lab notebook card is drawn daily by scripts/labbook and read from the `labbook` branch.
      ============================================================ -->
 
@@ -14,20 +14,20 @@
 </div>
 
 <p align="center">
-  <a href="https://github.com/vllm-project/semantic-router/pulls?q=is%3Apr+author%3Atheohsiung+is%3Amerged"><img src="https://img.shields.io/badge/vLLM_Semantic_Router-60%2B_merged_PRs-53a548?style=for-the-badge&logo=github&logoColor=white&labelColor=19381f" alt="vLLM Semantic Router: 60+ merged PRs"/></a>
-  <a href="https://github.com/theohsiung/metaResearch"><img src="https://img.shields.io/badge/meta--research-AI_for_Science-53a548?style=for-the-badge&logo=github&logoColor=white&labelColor=19381f" alt="meta-research"/></a>
+  <a href="https://github.com/vllm-project/semantic-router/pulls?q=is%3Apr+author%3Atheohsiung+is%3Amerged"><img src="https://img.shields.io/badge/vLLM_Semantic_Router-60%2B_merged_PRs-28965a?style=for-the-badge&logo=github&logoColor=white&labelColor=19381f" alt="vLLM Semantic Router: 60+ merged PRs"/></a>
+  <a href="https://github.com/theohsiung/metaResearch"><img src="https://img.shields.io/badge/meta--research-AI_for_Science-28965a?style=for-the-badge&logo=github&logoColor=white&labelColor=19381f" alt="meta-research"/></a>
   <a href="https://www.linkedin.com/in/theohsiung"><img src="https://img.shields.io/badge/LinkedIn-theohsiung-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=19381f" alt="LinkedIn"/></a>
 </p>
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20ABOUT-53a548?style=for-the-badge&labelColor=19381f" alt="About"/>
+<img src="https://img.shields.io/badge/%E2%9C%BF%20ABOUT-28965a?style=for-the-badge&labelColor=19381f" alt="About"/>
 
 I work at Delta Electronics in Taiwan and serve as an Associate Research Scientist on the [vLLM Semantic Router](https://github.com/vllm-project/semantic-router) team. I started in **computer vision** (face reenactment, FLAME 3D faces, diffusion avatars, 3D scene text), moved into **LLM serving and routing**, and now work on **AI for Science**: letting a coding agent run the research loop itself. I like working close to the model: simulators, routing, serving, evaluation, and the agent layer on top.
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20NOW%20BUILDING-53a548?style=for-the-badge&labelColor=19381f" alt="Now building"/>
+<img src="https://img.shields.io/badge/%E2%9C%BF%20NOW%20BUILDING-28965a?style=for-the-badge&labelColor=19381f" alt="Now building"/>
 
 <table width="100%">
 <thead><tr>
@@ -52,7 +52,7 @@ I work at Delta Electronics in Taiwan and serve as an Associate Research Scienti
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20WRITING-53a548?style=for-the-badge&labelColor=19381f" alt="Writing"/>
+<img src="https://img.shields.io/badge/%E2%9C%BF%20WRITING-28965a?style=for-the-badge&labelColor=19381f" alt="Writing"/>
 
 <table width="100%">
 <tbody><tr>
@@ -72,7 +72,7 @@ I work at Delta Electronics in Taiwan and serve as an Associate Research Scienti
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20OPEN%20SOURCE-53a548?style=for-the-badge&labelColor=19381f" alt="Open-source contributions"/>
+<img src="https://img.shields.io/badge/%E2%9C%BF%20OPEN%20SOURCE-28965a?style=for-the-badge&labelColor=19381f" alt="Open-source contributions"/>
 
 Selected merged pull requests to [vllm-project/semantic-router](https://github.com/vllm-project/semantic-router), grouped by area:
 
@@ -90,7 +90,7 @@ Elsewhere: [BerriAI/moyai#470](https://github.com/BerriAI/moyai/pull/470) centra
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20LAB%20NOTEBOOK-53a548?style=for-the-badge&labelColor=19381f" alt="Lab notebook"/>
+<img src="https://img.shields.io/badge/%E2%9C%BF%20LAB%20NOTEBOOK-28965a?style=for-the-badge&labelColor=19381f" alt="Lab notebook"/>
 
 <a href="https://github.com/pulls?q=is%3Apr+author%3Atheohsiung+is%3Amerged">
 <picture>
@@ -101,14 +101,14 @@ Elsewhere: [BerriAI/moyai#470](https://github.com/BerriAI/moyai/pull/470) centra
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20RESEARCH%20ROOTS-53a548?style=for-the-badge&labelColor=19381f" alt="Research roots in computer vision"/>
+<img src="https://img.shields.io/badge/%E2%9C%BF%20RESEARCH%20ROOTS-28965a?style=for-the-badge&labelColor=19381f" alt="Research roots in computer vision"/>
 
 - [**Syn3DTxt: Embedding 3D Cues for Scene Text Generation**](https://arxiv.org/abs/2505.18479): *CVPR 2025 Workshop (SyntaGen)*. Code: [SynTxt-Gen](https://github.com/theohsiung/SynTxt-Gen)
 - [**PASL: Pose-Adapted Shape Learning for Large-Pose Face Reenactment**](https://github.com/theohsiung/CVPR-LargePoseFaceReenactment), with follow-up work on [FLAME](https://github.com/theohsiung/PASL-with-FLAME) and [diffusion avatars](https://github.com/theohsiung/Diffusion_AVATAR)
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20STACK-53a548?style=for-the-badge&labelColor=19381f" alt="Stack"/>
+<img src="https://img.shields.io/badge/%E2%9C%BF%20STACK-28965a?style=for-the-badge&labelColor=19381f" alt="Stack"/>
 
 <p>
   <img src="https://img.shields.io/badge/Python-19381f?style=flat-square&logo=python" alt="Python"/>
@@ -126,7 +126,7 @@ Elsewhere: [BerriAI/moyai#470](https://github.com/BerriAI/moyai/pull/470) centra
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20THANKS-53a548?style=for-the-badge&labelColor=19381f" alt="Thanks"/>
+<img src="https://img.shields.io/badge/%E2%9C%BF%20THANKS-28965a?style=for-the-badge&labelColor=19381f" alt="Thanks"/>
 
 I build on [@karpathy](https://github.com/karpathy)'s [autoresearch](https://github.com/karpathy/autoresearch), the [Stanford IRIS Lab](https://github.com/stanford-iris-lab)'s [meta-harness](https://github.com/stanford-iris-lab/meta-harness), and the work of the [vLLM](https://github.com/vllm-project) maintainers and the [semantic-router](https://github.com/vllm-project/semantic-router) team. It's a privilege to contribute back.
 

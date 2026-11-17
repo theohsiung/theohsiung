@@ -31,7 +31,7 @@ PALETTES = {
         "bg": "#f8faf0", "grid": "#e7efd8", "panel": "#eef5e2", "track": "#cfe0b8",
         "text": "#19381f", "muted": "#4c934c", "fin": "#ffffff",
         "wine": "#d4cd1a", "wine_text": "#7a760c",
-        "blue": "#91cb3e", "blue_line": "#53a548", "blue_text": "#4c934c",
+        "blue": "#91cb3e", "blue_line": "#28965a", "blue_text": "#4c934c",
         "tag": ("#4c934c", "#19381f"),
         "blush": "#eee82c", "body": "#ffffff", "ink": "#19381f", "sparkle": "#d4cd1a",
     },

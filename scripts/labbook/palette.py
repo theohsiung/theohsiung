@@ -7,7 +7,7 @@ PALETTES = {
     },
     "light": {
         "bg": "#f8faf0", "panel": "#eef5e2", "grid": "#e7efd8", "track": "#cfe0b8",
-        "text": "#19381f", "muted": "#4c934c", "accent": "#53a548", "blue": "#4c934c",
+        "text": "#19381f", "muted": "#4c934c", "accent": "#28965a", "blue": "#4c934c",
     },
 }
 
@@ -16,7 +16,7 @@ AREA_COLORS = {
     "runtime": "#eee82c",
     "security": "#d6e681",
     "harness": "#91cb3e",
-    "routing": "#53a548",
+    "routing": "#28965a",
     "perf": "#c5e38f",
     "protocol": "#7fb069",
     "research": "#4c934c",
