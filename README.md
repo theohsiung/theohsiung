@@ -3,6 +3,7 @@
      Visual system: SVG banner (assets/) + shields for-the-badge section headers.
      GitHub strips CSS, so all design lives in images. Every badge is static
      (no rate-limited stats cards). Palette: #0d1117 · #881337 (wine). Banner colors live in scripts/banner.py.
+     The lab notebook card is drawn daily by scripts/labbook and read from the `labbook` branch.
      ============================================================ -->
 
 <div align="center">
