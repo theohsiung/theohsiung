@@ -11,6 +11,9 @@ class ClassifyTest(unittest.TestCase):
             "[Feature] Add vSR, a Claude Code plugin that runs the decision model inside the harness": "harness",
             "[Router] Dedup query-embedding inference on the cache-miss path": "perf",
             "[Router] Bound looper upstream response reads to a byte ceiling": "protocol",
+            "feat: knowledge graph — lineage navigation index over the experience ledger": "research",
+            "[Docs] Correct community meeting cadence wording": "upkeep",
+            "[Router] Validate decision modelRefs and reject duplicate decision names": "routing",
             "Create rrr.py": "other",
         }
         for title, area in cases.items():

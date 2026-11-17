@@ -16,7 +16,10 @@ AREA_COLORS = {
     "runtime": "#881337",
     "security": "#be123c",
     "harness": "#c9405f",
+    "routing": "#e8577a",
     "perf": "#a78bb5",
     "protocol": "#a6cdec",
+    "research": "#4a78a6",
+    "upkeep": "#8c959f",
     "other": "#57606a",
 }
