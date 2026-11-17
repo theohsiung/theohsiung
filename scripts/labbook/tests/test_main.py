@@ -1,0 +1,21 @@
+import contextlib
+import io
+import tempfile
+import unittest
+from pathlib import Path
+
+from cli import main
+from helpers import FIXTURE
+
+
+class MainTest(unittest.TestCase):
+    def test_fixture_writes_both_themes(self):
+        with tempfile.TemporaryDirectory() as out, contextlib.redirect_stdout(io.StringIO()):
+            code = main(["--fixture", str(FIXTURE), "--out", out, "--now", "2026-11-17T12:00:00"])
+            self.assertEqual(code, 0)
+            names = sorted(p.name for p in Path(out).iterdir())
+        self.assertEqual(names, ["labbook-dark.svg", "labbook-light.svg"])
+
+
+if __name__ == "__main__":
+    unittest.main()
