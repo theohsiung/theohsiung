@@ -23,6 +23,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fixture", type=Path, help="read search results from this JSON file instead of GitHub")
     parser.add_argument("--out", type=Path, default=Path("dist"))
     parser.add_argument("--now", type=datetime.fromisoformat, help="pretend it is this UTC time (for tests)")
+    parser.add_argument("--exclude", action="append", default=None,
+                        help="skip pull requests in this repo (default: the profile repo USER/USER)")
     args = parser.parse_args(argv)
 
     if args.fixture:
@@ -33,7 +35,8 @@ def main(argv: list[str] | None = None) -> int:
         except FetchError as err:
             print(f"labbook: {err}", file=sys.stderr)
             return 1
-    entries = parse_items(items)
+    exclude = tuple(args.exclude if args.exclude is not None else [f"{args.user}/{args.user}"])
+    entries = parse_items(items, exclude)
     now = (args.now or datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)
 
     args.out.mkdir(parents=True, exist_ok=True)
