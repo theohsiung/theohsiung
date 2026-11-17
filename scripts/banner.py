@@ -5,7 +5,7 @@ Run `python3 scripts/banner.py` after changing a palette or a scene below.
 The banner alternates two scenes on one 20-second clock:
 
 1. meta-research: an agent runs experiments on a liquid-cooling cold plate.
-   Each experiment shows the design's heatmap (pink = hot, mint = cool)
+   Each experiment shows the design's heatmap (yellow = hot, green = cool)
    and adds a point to the thermal-resistance vs. pressure-drop chart; the
    Pareto frontier moves toward the lower left.
 2. vSR: prompts pass through vLLM Semantic Router inside Claude Code. Each one
@@ -20,24 +20,24 @@ from pathlib import Path
 
 PALETTES = {
     "dark": {
-        "bg": "#1f1a2e", "grid": "#2e2740", "panel": "#2a2340", "track": "#4a3f63",
-        "text": "#fdf2f8", "muted": "#b8a9cf", "fin": "#ffffff",
-        "wine": "#f472b6", "wine_text": "#f9a8d4",
-        "blue": "#a5d8ff", "blue_line": "#a5d8ff", "blue_text": "#cfe8ff",
-        "tag": ("#f9a8d4", "#c4b5fd"),
-        "blush": "#f9a8d4", "body": "#fdf2f8", "ink": "#1f1a2e", "sparkle": "#fde68a",
+        "bg": "#19381f", "grid": "#21472a", "panel": "#1f4227", "track": "#2f5a36",
+        "text": "#f7f6d8", "muted": "#a9c39a", "fin": "#ffffff",
+        "wine": "#eee82c", "wine_text": "#eee82c",
+        "blue": "#91cb3e", "blue_line": "#91cb3e", "blue_text": "#c5e38f",
+        "tag": ("#eee82c", "#91cb3e"),
+        "blush": "#91cb3e", "body": "#f7f6d8", "ink": "#19381f", "sparkle": "#eee82c",
     },
     "light": {
-        "bg": "#fff7fb", "grid": "#fce7f3", "panel": "#fdf2f8", "track": "#f5d0e6",
-        "text": "#5b3a6b", "muted": "#a58bb3", "fin": "#ffffff",
-        "wine": "#f472b6", "wine_text": "#db2777",
-        "blue": "#a5d8ff", "blue_line": "#7c9ef0", "blue_text": "#6d83d6",
-        "tag": ("#ec4899", "#a78bfa"),
-        "blush": "#f9a8d4", "body": "#ffffff", "ink": "#5b3a6b", "sparkle": "#f59e0b",
+        "bg": "#f8faf0", "grid": "#e7efd8", "panel": "#eef5e2", "track": "#cfe0b8",
+        "text": "#19381f", "muted": "#4c934c", "fin": "#ffffff",
+        "wine": "#d4cd1a", "wine_text": "#7a760c",
+        "blue": "#91cb3e", "blue_line": "#53a548", "blue_text": "#4c934c",
+        "tag": ("#4c934c", "#19381f"),
+        "blush": "#eee82c", "body": "#ffffff", "ink": "#19381f", "sparkle": "#d4cd1a",
     },
 }
-BAR = ("#f9a8d4", "#c4b5fd", "#a7f3d0")
-HEAT = [(0.0, "#a7f3d0"), (0.4, "#c4b5fd"), (0.7, "#f9a8d4"), (1.0, "#ec4899")]  # cool -> hot
+BAR = ("#4c934c", "#91cb3e", "#eee82c")
+HEAT = [(0.0, "#4c934c"), (0.35, "#91cb3e"), (0.7, "#d6e681"), (1.0, "#eee82c")]  # cool -> hot
 
 CYCLE = 20.0
 SCENE_A = (0.0, 9.4)  # visible window; each edge fades over FADE
@@ -311,13 +311,14 @@ def sparkle(x: float, y: float, r: float) -> str:
             f'Q{x - k} {y + k} {x - r} {y} Q{x - k} {y - k} {x} {y - r} Z"/>')
 
 
-def heart(x: float, y: float, s: float) -> str:
-    return (f'<path d="M{x} {y + s * 0.9} C{x - s * 1.4} {y - s * 0.1} {x - s * 0.6} {y - s * 1.1} {x} {y - s * 0.35} '
-            f'C{x + s * 0.6} {y - s * 1.1} {x + s * 1.4} {y - s * 0.1} {x} {y + s * 0.9} Z"/>')
+def leaf(x: float, y: float, s: float) -> str:
+    """A leaf pointing up and to the right, with a center vein."""
+    return (f'<path d="M{x - s} {y + s} Q{x - s} {y - s} {x + s} {y - s} Q{x + s} {y + s} {x - s} {y + s} Z"/>'
+            f'<path d="M{x - s} {y + s} L{x + s * 0.4} {y - s * 0.4}" stroke="{"#19381f"}" stroke-opacity=".35" stroke-width="1"/>')
 
 
 def decoration(p: dict, an: Anims) -> str:
-    """Twinkling sparkles, and a blob mascot that bobs, blinks and sends up a heart."""
+    """Twinkling sparkles, and a blob mascot that bobs, blinks and sends up a leaf."""
     out = []
     for x, y, r, t in SPARKLES:
         frames = []
@@ -346,7 +347,7 @@ def decoration(p: dict, an: Anims) -> str:
     for t in (4.0, 14.0):
         rise = [(0.0, "opacity:0;transform:translateY(0)"), (t, "opacity:0;transform:translateY(0)"),
                 (t + 0.3, "opacity:1;transform:translateY(-6px)"), (t + 2.0, "opacity:0;transform:translateY(-34px)")]
-        out.append(f'<g fill="{p["wine"]}" {an.attr(rise, base="opacity:0;")}>{heart(cx + 30, cy - 34, 7)}</g>')
+        out.append(f'<g fill="{p["wine"]}" {an.attr(rise, base="opacity:0;")}>{leaf(cx + 30, cy - 34, 7)}</g>')
     return "".join(out)
 
 
