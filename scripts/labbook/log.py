@@ -6,7 +6,7 @@ from anim import Anims, appear
 from layout import LOG_RIGHT, LOG_ROWS, LOG_STEP, LOG_X, LOG_Y, REF_CHARS, TITLE_CHARS
 from model import Entry
 from palette import AREA_COLORS
-from svg import el, esc
+from svg import el, esc, heart_path
 from text import ago, truncate
 
 ROW_START, ROW_STEP = 0.4, 0.5
@@ -16,7 +16,7 @@ SHOWN = "opacity:1;transform:translateX(0)"
 
 def render_row(entry: Entry, y: int, now: datetime) -> str:
     ref = truncate(f"{entry.repo.split('/')[-1]}#{entry.number}", REF_CHARS)
-    return (el("circle", cx=LOG_X + 6, cy=y - 4, r=4.5, fill=AREA_COLORS[entry.area])
+    return (el("path", d=heart_path(LOG_X + 6, y - 4, 11), fill=AREA_COLORS[entry.area])
             + el("text", esc(ref), x=LOG_X + 20, y=y, class_="ref")
             + el("text", esc(truncate(entry.title, TITLE_CHARS)), x=LOG_X + 190, y=y, class_="title")
             + el("text", ago(entry.merged_at, now), x=LOG_RIGHT, y=y, class_="ref", text_anchor="end"))
@@ -36,6 +36,6 @@ def render_log(entries: list[Entry], now: datetime, anims: Anims) -> str:
     blink = [(0.0, "opacity:0")] + [
         (ROW_START + len(shown) * ROW_STEP + k * 0.5, "opacity:1" if k % 2 == 0 else "opacity:0") for k in range(14)
     ]
-    cursor = el("rect", x=LOG_X + 1, y=cursor_y - 13, width=9, height=16, class_="cursor")
+    cursor = el("path", d=heart_path(LOG_X + 6, cursor_y - 5, 13), class_="cursor")
     rows.append(f'<g {anims.attr(blink, base="opacity:1;")}>{cursor}</g>')
     return "".join(rows)

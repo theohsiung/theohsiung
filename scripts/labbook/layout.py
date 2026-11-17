@@ -11,4 +11,4 @@ CHART_X0, CHART_X1, CHART_TOP, CHART_BASE = 820, 1152, 96, 236
 WEEKS = 12
 
 MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-SANS = '-apple-system, "Segoe UI", Helvetica, Arial, sans-serif'
+SANS = 'ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", "Nunito", -apple-system, "Segoe UI", sans-serif'
