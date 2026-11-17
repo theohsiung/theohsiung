@@ -15,3 +15,5 @@ jobs:
           python-version: "3.12"
       - name: Unit tests
         run: PYTHONPATH=scripts/labbook python3 -m unittest discover -s scripts/labbook/tests -v
+      - name: Draw from the fixture
+        run: python3 scripts/labbook --fixture scripts/labbook/tests/fixtures/search.json --out dist
