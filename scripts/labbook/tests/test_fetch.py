@@ -1,8 +1,9 @@
 import io
 import json
 import unittest
+from urllib.error import HTTPError
 
-from fetch import PER_PAGE, fetch_items, headers, search_url
+from fetch import PER_PAGE, FetchError, fetch_items, headers, search_url
 
 
 def fake_opener(pages):
@@ -29,6 +30,13 @@ class FetchTest(unittest.TestCase):
         opener, calls = fake_opener([[{}] * PER_PAGE, [{}] * 3])
         self.assertEqual(len(fetch_items("u", opener=opener)), PER_PAGE + 3)
         self.assertEqual(len(calls), 2)
+
+    def test_rate_limit_names_the_fix(self):
+        def opener(request, timeout):
+            raise HTTPError(request.full_url, 403, "Forbidden", {}, None)
+
+        with self.assertRaisesRegex(FetchError, "GITHUB_TOKEN"):
+            fetch_items("u", opener=opener)
 
 
 if __name__ == "__main__":
