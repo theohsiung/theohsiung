@@ -89,6 +89,15 @@ Elsewhere: [BerriAI/moyai#470](https://github.com/BerriAI/moyai/pull/470) centra
 
 &nbsp;
 
+<img src="https://img.shields.io/badge/LAB%20NOTEBOOK-881337?style=for-the-badge&labelColor=0d1117" alt="Lab notebook"/>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/theohsiung/theohsiung/labbook/labbook-dark.svg"/>
+  <img src="https://raw.githubusercontent.com/theohsiung/theohsiung/labbook/labbook-light.svg" alt="Lab notebook: my newest merged pull requests, typed in one line at a time, and merged pull requests per week by area of work. Redrawn daily by scripts/labbook." width="100%"/>
+</picture>
+
+&nbsp;
+
 <img src="https://img.shields.io/badge/RESEARCH%20ROOTS-881337?style=for-the-badge&labelColor=0d1117" alt="Research roots in computer vision"/>
 
 - [**Syn3DTxt: Embedding 3D Cues for Scene Text Generation**](https://arxiv.org/abs/2505.18479): *CVPR 2025 Workshop (SyntaGen)*. Code: [SynTxt-Gen](https://github.com/theohsiung/SynTxt-Gen)
