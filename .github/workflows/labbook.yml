@@ -1,0 +1,31 @@
+name: labbook
+
+# Draws the lab notebook card from merged pull requests and publishes it to the
+# `labbook` branch, which README.md reads from raw.githubusercontent.com.
+on:
+  schedule:
+    - cron: "30 18 * * *" # daily, 02:30 Taiwan time
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 scripts/labbook --out dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: labbook
+          build_dir: dist
+          commit_message: "chore: redraw the lab notebook"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
