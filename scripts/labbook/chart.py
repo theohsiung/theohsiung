@@ -21,7 +21,7 @@ def render_chart(buckets: list[tuple[date, Counter]], anims: Anims) -> str:
     for i, (_, counts) in enumerate(buckets):
         x = CHART_X0 + i * slot + (slot - width) / 2
         out.append(el("rect", x=f"{x:.1f}", y=CHART_TOP, width=f"{width:.1f}", height=CHART_BASE - CHART_TOP,
-                      rx=3, class_="track"))
+                      rx=f"{width / 2:.1f}", class_="track"))
         y = CHART_BASE
         segments = []
         for area in AREAS:
@@ -32,7 +32,8 @@ def render_chart(buckets: list[tuple[date, Counter]], anims: Anims) -> str:
                                    fill=AREA_COLORS[area]))
         if segments:
             grow = appear(BAR_START + i * BAR_STEP, hidden="transform:scaleY(0)", shown="transform:scaleY(1)")
-            out.append(f'<g {anims.attr(grow, base="transform:scaleY(1);", cls="grow")}>{"".join(segments)}</g>')
+            clip = f'<clipPath id="bar{i}"><rect x="{x:.1f}" y="{CHART_TOP}" width="{width:.1f}" height="{CHART_BASE - CHART_TOP}" rx="{width / 2:.1f}"/></clipPath>'
+            out.append(f'{clip}<g clip-path="url(#bar{i})"><g {anims.attr(grow, base="transform:scaleY(1);", cls="grow")}>{"".join(segments)}</g></g>')
     out.append(el("text", f"{len(buckets)}w ago", x=CHART_X0, y=CHART_BASE + 18, class_="tiny"))
     out.append(el("text", "this week", x=CHART_X1, y=CHART_BASE + 18, class_="tiny", text_anchor="end"))
     return "".join(out)

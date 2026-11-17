@@ -2,24 +2,24 @@
 
 PALETTES = {
     "dark": {
-        "bg": "#0d1117", "panel": "#161b22", "grid": "#1c2129", "track": "#30363d",
-        "text": "#e6edf3", "muted": "#7d8590", "accent": "#e8577a", "blue": "#a6cdec",
+        "bg": "#1f1a2e", "panel": "#2a2340", "grid": "#2e2740", "track": "#4a3f63",
+        "text": "#fdf2f8", "muted": "#b8a9cf", "accent": "#f9a8d4", "blue": "#a5d8ff",
     },
     "light": {
-        "bg": "#ffffff", "panel": "#f6f8fa", "grid": "#e4e7eb", "track": "#d0d7de",
-        "text": "#1f2328", "muted": "#6e7781", "accent": "#881337", "blue": "#4a78a6",
+        "bg": "#fff7fb", "panel": "#fdf2f8", "grid": "#fce7f3", "track": "#f5d0e6",
+        "text": "#5b3a6b", "muted": "#a58bb3", "accent": "#ec4899", "blue": "#7c9ef0",
     },
 }
 
-# One color per area, from wine to powder blue. Both themes share them.
+# One pastel per area. Both themes share them.
 AREA_COLORS = {
-    "runtime": "#881337",
-    "security": "#be123c",
-    "harness": "#c9405f",
-    "routing": "#e8577a",
-    "perf": "#a78bb5",
-    "protocol": "#a6cdec",
-    "research": "#4a78a6",
-    "upkeep": "#8c959f",
-    "other": "#57606a",
+    "runtime": "#f472b6",
+    "security": "#fb7185",
+    "harness": "#c084fc",
+    "routing": "#f9a8d4",
+    "perf": "#fcd34d",
+    "protocol": "#93c5fd",
+    "research": "#6ee7b7",
+    "upkeep": "#c4b5fd",
+    "other": "#b8a9cf",
 }
