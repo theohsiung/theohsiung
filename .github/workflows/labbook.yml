@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: "30 18 * * *" # daily, 02:30 Taiwan time
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["scripts/labbook/**", ".github/workflows/labbook.yml"]
 
 permissions:
   contents: write
