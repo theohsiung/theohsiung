@@ -6,6 +6,7 @@ import urllib.request
 
 API = "https://api.github.com/search/issues"
 PER_PAGE = 100
+MAX_PAGES = 10  # the search API stops at 1000 results
 
 
 def search_url(user: str, page: int) -> str:
@@ -21,6 +22,12 @@ def headers(token: str | None) -> dict[str, str]:
 
 
 def fetch_items(user: str, token: str | None = None, opener=urllib.request.urlopen) -> list[dict]:
-    request = urllib.request.Request(search_url(user, 1), headers=headers(token))
-    with opener(request, timeout=30) as response:
-        return json.load(response).get("items", [])
+    items: list[dict] = []
+    for page in range(1, MAX_PAGES + 1):
+        request = urllib.request.Request(search_url(user, page), headers=headers(token))
+        with opener(request, timeout=30) as response:
+            batch = json.load(response).get("items", [])
+        items.extend(batch)
+        if len(batch) < PER_PAGE:
+            break
+    return items
