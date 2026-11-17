@@ -9,7 +9,8 @@ from svg import el
 
 def summary(entries: list[Entry]) -> str:
     repos = len({e.repo for e in entries})
-    return f"{len(entries)} merged pull requests across {repos} repos"
+    noun = "repo" if repos == 1 else "repos"
+    return f"{len(entries)} merged pull requests across {repos} {noun}"
 
 
 def render_footer(entries: list[Entry], today: date) -> str:
