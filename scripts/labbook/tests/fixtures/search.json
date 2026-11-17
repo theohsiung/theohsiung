@@ -1,0 +1,93 @@
+{
+ "total_count": 11,
+ "items": [
+  {
+   "number": 8,
+   "title": "List at2_skills under Now building",
+   "repository_url": "https://api.github.com/repos/theohsiung/theohsiung",
+   "pull_request": {
+    "merged_at": "2026-11-17T09:55:09Z"
+   }
+  },
+  {
+   "number": 6113,
+   "title": "[Feature] Record the ROCm golden answers of the Vela 3.0 d3 sizes",
+   "repository_url": "https://api.github.com/repos/vllm-project/semantic-router",
+   "pull_request": {
+    "merged_at": "2026-11-10T13:55:44Z"
+   }
+  },
+  {
+   "number": 6081,
+   "title": "[Feature] Move the vSR Claude Code plugin to src/agent-harness/",
+   "repository_url": "https://api.github.com/repos/vllm-project/semantic-router",
+   "pull_request": {
+    "merged_at": "2026-11-10T11:11:47Z"
+   }
+  },
+  {
+   "number": 5950,
+   "title": "[Feature] Add vSR, a Claude Code plugin that runs the decision model inside the harness",
+   "repository_url": "https://api.github.com/repos/vllm-project/semantic-router",
+   "pull_request": {
+    "merged_at": "2026-11-09T13:10:54Z"
+   }
+  },
+  {
+   "number": 5854,
+   "title": "[Refactor] Model runtime: Spans, a package-side SpanConfig and a checked load_as for Vela 3.0 d3",
+   "repository_url": "https://api.github.com/repos/vllm-project/semantic-router",
+   "pull_request": {
+    "merged_at": "2026-11-05T04:46:58Z"
+   }
+  },
+  {
+   "number": 470,
+   "title": "fix: centralize GitHub trigger action resolution",
+   "repository_url": "https://api.github.com/repos/BerriAI/moyai",
+   "pull_request": {
+    "merged_at": "2026-10-15T20:37:33Z"
+   }
+  },
+  {
+   "number": 2759,
+   "title": "[Router] add pluggable jailbreak classifier backend (backend enum + http_classify + positive_labels)",
+   "repository_url": "https://api.github.com/repos/vllm-project/semantic-router",
+   "pull_request": {
+    "merged_at": "2026-08-13T15:58:44Z"
+   }
+  },
+  {
+   "number": 2697,
+   "title": "[Router][Dashboard][E2E] surface looper latency and token usage headers",
+   "repository_url": "https://api.github.com/repos/vllm-project/semantic-router",
+   "pull_request": {
+    "merged_at": "2026-07-28T02:19:26Z"
+   }
+  },
+  {
+   "number": 2580,
+   "title": "[Router] Bound looper upstream response reads to a byte ceiling",
+   "repository_url": "https://api.github.com/repos/vllm-project/semantic-router",
+   "pull_request": {
+    "merged_at": "2026-07-16T18:28:14Z"
+   }
+  },
+  {
+   "number": 6113,
+   "title": "[Feature] Record the ROCm golden answers of the Vela 3.0 d3 sizes",
+   "repository_url": "https://api.github.com/repos/vllm-project/semantic-router",
+   "pull_request": {
+    "merged_at": "2026-11-10T13:55:44Z"
+   }
+  },
+  {
+   "number": 9999,
+   "title": "[Feature] Closed without merging",
+   "repository_url": "https://api.github.com/repos/vllm-project/semantic-router",
+   "pull_request": {
+    "merged_at": null
+   }
+  }
+ ]
+}
