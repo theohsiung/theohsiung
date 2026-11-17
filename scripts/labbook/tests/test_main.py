@@ -16,6 +16,12 @@ class MainTest(unittest.TestCase):
             names = sorted(p.name for p in Path(out).iterdir())
         self.assertEqual(names, ["labbook-dark.svg", "labbook-light.svg"])
 
+    def test_profile_repo_is_excluded_by_default(self):
+        with tempfile.TemporaryDirectory() as out, contextlib.redirect_stdout(io.StringIO()):
+            main(["--fixture", str(FIXTURE), "--out", out, "--user", "theohsiung"])
+            text = (Path(out) / "labbook-dark.svg").read_text(encoding="utf-8")
+        self.assertIn("8 merged pull requests", text)
+
 
 if __name__ == "__main__":
     unittest.main()
