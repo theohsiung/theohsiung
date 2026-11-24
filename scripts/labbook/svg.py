@@ -19,8 +19,7 @@ def el(tag: str, body: str = "", **attrs) -> str:
 
 
 
-def star_path(x: float, y: float, size: float) -> str:
-    """Path data for a four-pointed star centered on (x, y), `size` across."""
-    s, k = size / 2, size * 0.14
-    return (f"M{x} {y - s} Q{x + k} {y - k} {x + s} {y} Q{x + k} {y + k} {x} {y + s} "
-            f"Q{x - k} {y + k} {x - s} {y} Q{x - k} {y - k} {x} {y - s} Z")
+def tile_path(x: float, y: float, size: float) -> str:
+    """Path data for a square tile centered on (x, y), `size` across."""
+    s = size / 2
+    return f"M{x - s} {y - s} H{x + s} V{y + s} H{x - s} Z"
