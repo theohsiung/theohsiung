@@ -9,7 +9,7 @@
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg"/>
-    <img src="assets/banner-light.svg" alt="Theo Hsiung: AI for Science, LLM systems and agentic infrastructure. A research loop of propose, simulate, diagnose and hypothesize, with every result committed to git." width="100%"/>
+    <img src="assets/banner-light.svg" alt="Theo Hsiung: AI for Science, LLM systems and agentic infrastructure. An animated banner cycles through an agent optimizing a liquid-cooling cold plate, vLLM Semantic Router routing prompts inside Claude Code, and a concept of routing compute to orbit." width="100%"/>
   </picture>
 </div>
 

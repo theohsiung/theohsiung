@@ -2,7 +2,7 @@
 
 Run `python3 scripts/banner.py` after changing a palette or a scene below.
 
-The banner alternates two scenes on one 20-second clock:
+The banner alternates three scenes on one 30-second clock:
 
 1. meta-research: an agent runs experiments on a liquid-cooling cold plate.
    Each experiment shows the design's heatmap (yellow = hot, green = cool)
@@ -11,8 +11,12 @@ The banner alternates two scenes on one 20-second clock:
 2. vSR: prompts pass through vLLM Semantic Router inside Claude Code. Each one
    goes to the right model, has its secret masked, or is held for you to
    confirm.
+3. orbit: a concept scene. Compute goes where the data is: raw imagery is
+   processed on an orbital node and only the result comes down, heavy
+   training goes to ground GPUs, and a task with no ground link waits for
+   the next pass.
 
-The heatmaps and chart are illustrative, so the banner shows no numbers.
+The heatmaps, chart and orbit scene are illustrative, so the banner shows no numbers.
 """
 
 import math
@@ -43,9 +47,12 @@ PALETTES = {
 BAR = ("#4c934c", "#91cb3e", "#eee82c")
 HEAT = [(0.0, "#4c934c"), (0.35, "#91cb3e"), (0.7, "#d6e681"), (1.0, "#eee82c")]  # cool -> hot
 
-CYCLE = 20.0
+CYCLE = 30.0
 SCENE_A = (0.0, 9.4)  # visible window; each edge fades over FADE
 SCENE_B = (10.0, 19.6)
+SCENE_C = (20.0, 29.6)
+BEAT = 5.0  # seconds between mascot hops and sparkle twinkles
+BEATS = int(CYCLE // BEAT)
 FADE = 0.4
 STAGE_X = 690
 
@@ -304,6 +311,118 @@ def scene_b(p: dict, an: Anims) -> str:
     return "".join(out)
 
 
+# ---------------------------------------------------------------- scene C: orbit (concept)
+ORBIT = ((692, 150), (930, 20), (1168, 150))      # quadratic Bezier: start, control, end
+HORIZON = ((692, 262), (930, 214), (1168, 262))
+ROUTER = (930, 160)
+STARS = [(712, 78, 1.2), (748, 64, 1.0), (812, 70, 1.4), (868, 58, 1.0), (1010, 66, 1.2), (1064, 62, 1.4),
+         (1118, 82, 1.0), (1152, 70, 1.2), (724, 176, 1.0), (760, 200, 1.2), (1135, 178, 1.0), (1160, 205, 1.4),
+         (850, 198, 1.0), (1040, 196, 1.0)]
+
+# (task, route, caption). A route is the node that does the work, or "queue" when there is no ground link.
+TASKS = [
+    ("classify raw imagery", "orbit", "raw data stays up: process in orbit, downlink only the result"),
+    ("fine-tune the model", "gpu", "heavy compute → ground GPUs"),
+    ("no ground link", "queue", "no link window → hold until the next pass"),
+]
+TASK_START, TASK_STEP = 20.4, 3.1
+
+
+def bez(arc: tuple, t: float) -> tuple[float, float]:
+    (x0, y0), (cx, cy), (x1, y1) = arc
+    u = 1 - t
+    return u * u * x0 + 2 * u * t * cx + t * t * x1, u * u * y0 + 2 * u * t * cy + t * t * y1
+
+
+def arc_path(arc: tuple) -> str:
+    (x0, y0), (cx, cy), (x1, y1) = arc
+    return f"M{x0} {y0} Q{cx} {cy} {x1} {y1}"
+
+
+def lit(base: str, on: str, windows: list[tuple[float, float]], extra_base: str = "", extra_on: str = "") -> list:
+    """Keyframes for a node that takes a lit style during each (t_on, t_off) window."""
+    frames = [(0.0, f"{base};{extra_base}")]
+    for t_on, t_off in windows:
+        frames += [(t_on, f"{base};{extra_base}"), (t_on + 0.2, f"{on};{extra_on}"), (t_off, f"{on};{extra_on}"),
+                   (t_off + 0.3, f"{base};{extra_base}")]
+    return frames
+
+
+def scene_c(p: dict, an: Anims) -> str:
+    starts = [TASK_START + TASK_STEP * i for i in range(len(TASKS))]
+    sats = [bez(ORBIT, t) for t in (0.2, 0.5, 0.8)]
+    gpu, station = bez(HORIZON, 0.2), bez(HORIZON, 0.82)
+    main_sat = sats[1]
+    rx, ry = ROUTER
+    out = [f'<defs><linearGradient id="earth" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{p["panel"]}" stop-opacity="1"/>'
+           f'<stop offset="1" stop-color="{p["panel"]}" stop-opacity="0"/></linearGradient></defs>']
+
+    # sky and ground
+    out += [f'<circle cx="{x}" cy="{y}" r="{r * 1.3:.1f}" fill="{p["text"]}" opacity=".7"/>' for x, y, r in STARS]
+    out.append(f'<path d="{arc_path(HORIZON)} V320 H692 Z" fill="url(#earth)"/>'
+               f'<path d="{arc_path(HORIZON)}" fill="none" stroke="{p["blue_line"]}" stroke-width="1.6" opacity=".75"/>'
+               f'<path d="{arc_path(ORBIT)}" fill="none" stroke="{p["muted"]}" stroke-opacity=".6" stroke-width="1.6" stroke-dasharray="3 5"/>'
+               f'<text x="700" y="126" class="tiny">orbit</text><text x="700" y="248" class="tiny">ground</text>')
+
+    # orbit nodes drift a little along the arc; the one that does the work lights up
+    work = {"orbit": starts[0]}
+    for i, (x, y) in enumerate(sats):
+        drift = [(0.0, "transform:translate(0,0)"), (CYCLE / 2, "transform:translate(10px,0)"), (CYCLE, "transform:translate(0,0)")]
+        windows = [(work["orbit"] + 1.4, work["orbit"] + 2.9)] if i == 1 else []
+        body = lit(f"fill:{p['muted']}", f"fill:{p['blue']}", windows) if windows else [(0.0, f"fill:{p['muted']}")]
+        out.append(f'<g transform="translate({x:.1f} {y:.1f}) scale(1.7)"><g {an.attr(drift)}>'
+                   f'<rect x="-17" y="-2.5" width="9" height="5" rx="1" fill="{p["panel"]}" stroke="{p["track"]}"/>'
+                   f'<rect x="8" y="-2.5" width="9" height="5" rx="1" fill="{p["panel"]}" stroke="{p["track"]}"/>'
+                   f'<rect {an.attr(body)} x="-6" y="-4" width="12" height="8" rx="2" stroke="{p["track"]}"/></g></g>')
+
+    # ground nodes
+    for name, (x, y), label, t_work in (("gpu", gpu, "GPUs", starts[1] + 1.4), ("station", station, "station", starts[0] + 2.1)):
+        frames = lit(f"stroke:{p['track']}", f"stroke:{p['blue_line']}", [(t_work, t_work + 1.3)])
+        out.append(f'<g transform="translate({x:.1f} {y - 11:.1f}) scale(1.35)"><rect {an.attr(frames)} x="-12" y="-7" width="24" height="14" rx="3" '
+                   f'fill="{p["panel"]}" stroke-width="1.6"/>'
+                   + ('<path d="M-6 -2 H6 M-6 2 H6" stroke="' + p["muted"] + '" stroke-width="1.4" stroke-linecap="round"/>' if name == "gpu"
+                      else '<path d="M-6 3 Q0 -9 6 3" fill="none" stroke="' + p["muted"] + '" stroke-width="1.4"/>')
+                   + f'</g><text x="{x:.1f}" y="{y + 16:.1f}" class="tiny" text-anchor="middle">{label}</text>')
+
+    # router: outline takes the route's color while it decides
+    frames = [(0.0, f"stroke:{p['track']}")]
+    for t, (_, route, _) in zip(starts, TASKS):
+        c = p["wine"] if route == "queue" else p["blue_line"]
+        end = t + (2.2 if route == "queue" else 1.5)
+        frames += [(t + 0.6, f"stroke:{p['track']}"), (t + 0.8, f"stroke:{c}"), (end, f"stroke:{c}"), (end + 0.3, f"stroke:{p['track']}")]
+    out.append(f'<rect {an.attr(frames)} x="{rx - 35}" y="{ry - 17}" width="70" height="34" rx="9" fill="{p["panel"]}" stroke-width="1.6"/>'
+               f'<text x="{rx}" y="{ry + 4}" class="router" text-anchor="middle">vSR</text>')
+
+    def beam(a: tuple, b: tuple, t0: float, color: str) -> str:
+        d = f"M{a[0]:.1f} {a[1]:.1f}L{b[0]:.1f} {b[1]:.1f}"
+        frames = [(0.0, "opacity:0;stroke-dashoffset:1"), (t0, "opacity:0;stroke-dashoffset:1"), (t0 + 0.02, "opacity:1;stroke-dashoffset:1"),
+                  (t0 + 0.5, "opacity:1;stroke-dashoffset:0"), (t0 + 1.3, "opacity:1;stroke-dashoffset:0"), (t0 + 1.6, "opacity:0;stroke-dashoffset:0")]
+        return (f'<path {an.attr(frames, base="opacity:0;")} d="{d}" pathLength="1" stroke-dasharray="1 1" fill="none" '
+                f'stroke="{color}" stroke-width="1.8" stroke-linecap="round"/>')
+
+    for t, (task, route, caption) in zip(starts, TASKS):
+        # the task slides toward the router
+        slide = [(0.0, "opacity:0;transform:translateX(-14px)"), (t, "opacity:0;transform:translateX(-14px)"),
+                 (t + 0.3, "opacity:1;transform:translateX(0)"), (t + 0.6, "opacity:1;transform:translateX(0)"),
+                 (t + 0.95, "opacity:0;transform:translateX(40px)")]
+        out.append(f'<g {an.attr(slide, base="opacity:0;")}>{chip(STAGE_X, ry, task, 11, p["track"], p)}</g>')
+
+        color = p["wine"] if route == "queue" else p["blue_line"]
+        if route == "orbit":
+            out.append(beam((rx, ry - 17), (main_sat[0], main_sat[1] + 6), t + 0.9, color))
+            out.append(beam((main_sat[0], main_sat[1] + 6), (station[0], station[1] - 20), t + 1.6, color))
+        elif route == "gpu":
+            out.append(beam((rx - 20, ry + 17), (gpu[0] + 6, gpu[1] - 20), t + 0.9, color))
+        else:
+            hold = window(t + 1.0, t + 2.6, 0.2)
+            out.append(f'<text {an.attr(hold, base="opacity:0;", cls="small")} x="{rx}" y="{ry + 36}" text-anchor="middle" '
+                       f'fill="{p["wine_text"]}">queued · next pass</text>')
+        text_color = p["wine_text"] if route == "queue" else p["blue_text"]
+        style = an.attr(window(t + 1.0, t + 2.9, 0.2), base="opacity:0;", cls="log")
+        out.append(f'<text {style} x="{STAGE_X}" y="292"><tspan fill="{text_color}">{esc(caption)}</tspan></text>')
+    return "".join(out)
+
+
 # ---------------------------------------------------------------- decoration
 SPARKLES = [(486, 58, 9, 0.0), (652, 132, 7, 1.3), (30, 44, 8, 2.6), (430, 238, 6, 3.9), (520, 286, 7, 5.2)]
 
@@ -349,15 +468,15 @@ def mascot(p: dict, an: Anims) -> str:
 
     # one hop per 5 seconds: anticipate, launch, hang, land, settle
     hop = []
-    for k in range(4):
-        t = k * 5.0
+    for k in range(BEATS):
+        t = k * BEAT
         hop += [(t, "transform:translateY(0) scale(1,1)"), (t + 0.25, "transform:translateY(0) scale(1.14,.84)"),
                 (t + 0.5, "transform:translateY(-24px) scale(.9,1.12)"), (t + 0.8, "transform:translateY(-30px) scale(1,1)"),
                 (t + 1.1, "transform:translateY(0) scale(1.16,.82)"), (t + 1.3, "transform:translateY(0) scale(.96,1.05)"),
                 (t + 1.5, "transform:translateY(0) scale(1,1)")]
     shadow_frames = []
-    for k in range(4):
-        t = k * 5.0
+    for k in range(BEATS):
+        t = k * BEAT
         shadow_frames += [(t, "transform:scale(1);opacity:.55"), (t + 0.25, "transform:scale(1.15);opacity:.6"),
                           (t + 0.8, "transform:scale(.6);opacity:.25"), (t + 1.1, "transform:scale(1.2);opacity:.6"),
                           (t + 1.5, "transform:scale(1);opacity:.55")]
@@ -380,7 +499,8 @@ def mascot(p: dict, an: Anims) -> str:
                      f'<circle cx="{x - 1.6}" cy="{cy - 0.4}" r="1.5" fill="#ffffff"/><circle cx="{x + 1.6}" cy="{cy + 3.6}" r=".7" fill="#ffffff"/>'
                      for x in (cx - 11, cx + 11))
     blink = [(0.0, "transform:scaleY(1)"), (3.0, "transform:scaleY(1)"), (3.1, "transform:scaleY(.08)"), (3.22, "transform:scaleY(1)"),
-             (13.0, "transform:scaleY(1)"), (13.1, "transform:scaleY(.08)"), (13.22, "transform:scaleY(1)")]
+             (13.0, "transform:scaleY(1)"), (13.1, "transform:scaleY(.08)"), (13.22, "transform:scaleY(1)"),
+             (23.0, "transform:scaleY(1)"), (23.1, "transform:scaleY(.08)"), (23.22, "transform:scaleY(1)")]
     eyes = (f'<g {an.attr(blink, base="", cls="fb")}>'
             f'<ellipse cx="{cx - 11}" cy="{cy}" rx="8" ry="9.5" fill="url(#eye)"/><ellipse cx="{cx + 11}" cy="{cy}" rx="8" ry="9.5" fill="url(#eye)"/>'
             f'<g {an.attr(look)}>{pupils}</g></g>')
@@ -394,13 +514,13 @@ def decoration(p: dict, an: Anims) -> str:
     out = []
     for x, y, r, t in SPARKLES:
         frames = []
-        for k in range(4):
-            t0 = (t + k * 5.0) % CYCLE
+        for k in range(BEATS):
+            t0 = (t + k * BEAT) % CYCLE
             frames += [(t0, "opacity:.25;transform:scale(.6)"), (t0 + 0.5, "opacity:1;transform:scale(1.15)"),
                        (t0 + 1.2, "opacity:.25;transform:scale(.6)")]
         out.append(f'<g fill="{p["sparkle"]}" {an.attr(frames, base="opacity:.8;", cls="fb")}>{sparkle(x, y, r)}</g>')
     out.append(mascot(p, an))
-    for t in (1.0, 11.0):
+    for t in (1.0, 11.0, 21.0):
         rise = [(0.0, "opacity:0;transform:translateY(0)"), (t, "opacity:0;transform:translateY(0)"),
                 (t + 0.3, "opacity:1;transform:translateY(-6px)"), (t + 2.0, "opacity:0;transform:translateY(-34px)")]
         out.append(f'<g fill="{p["wine"]}" {an.attr(rise, base="opacity:0;")}>{leaf(626, 50, 7)}</g>')
@@ -419,7 +539,7 @@ def typed(command: str, start: float, p: dict, an: Anims) -> str:
 
 def scene_header(title: str, subtitle: str, active: int, p: dict) -> str:
     dots = "".join(f'<circle cx="{1150 + k * 14}" cy="46" r="4" fill="{p["blue"] if k == active else p["track"]}"/>'
-                   for k in range(2))
+                   for k in range(3))
     return f'<text x="{STAGE_X}" y="50" class="title">{title}<tspan class="subtitle"> · {subtitle}</tspan></text>{dots}'
 
 
@@ -427,10 +547,13 @@ def render(p: dict) -> str:
     an = Anims()
     a_style = an.attr(window(*SCENE_A, FADE), base="opacity:1;")
     b_style = an.attr(window(*SCENE_B, FADE), base="opacity:0;")
+    c_style = an.attr(window(*SCENE_C, FADE), base="opacity:0;")
     a = (scene_header("meta-research", "an agent optimizes a cold plate", 0, p)
          + typed("$ meta-research run water_cooling", SCENE_A[0] + 0.2, p, an) + scene_a(p, an))
     b = (scene_header("vSR", "vLLM Semantic Router inside Claude Code", 1, p)
          + typed("$ claude --plugin vsr", SCENE_B[0] + 0.2, p, an) + scene_b(p, an))
+    c = (scene_header("orbit", "concept · routing beyond the data center", 2, p)
+         + typed("# what if routing reached orbit?", SCENE_C[0] + 0.2, p, an) + scene_c(p, an))
     light = lighting(p, an)
     deco = decoration(p, an)
     keyframes = "\n      ".join(an.rules)
@@ -438,7 +561,7 @@ def render(p: dict) -> str:
     sans = 'ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", "Nunito", -apple-system, "Segoe UI", sans-serif'
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-labelledby="t d">
   <title id="t">Theo Hsiung</title>
-  <desc id="d">AI for Science, LLM systems and agentic infrastructure. Two alternating scenes: an agent optimizing a liquid-cooling cold plate, pushing the Pareto frontier of thermal resistance and pressure drop; and vLLM Semantic Router inside Claude Code sending each prompt to the right model, masking a secret, and holding a risky Bash command.</desc>
+  <desc id="d">AI for Science, LLM systems and agentic infrastructure. Three alternating scenes: an agent optimizing a liquid-cooling cold plate, pushing the Pareto frontier of thermal resistance and pressure drop; vLLM Semantic Router inside Claude Code sending each prompt to the right model, masking a secret, and holding a risky Bash command; and a concept of routing compute to orbit, where raw imagery is processed on an orbital node, heavy training goes to ground GPUs, and a task with no ground link waits for the next pass.</desc>
   <!-- Generated by scripts/banner.py; edit the palette and scenes there, not here. -->
   <defs>
     <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="{p["grid"]}"/></pattern>
@@ -482,6 +605,7 @@ def render(p: dict) -> str:
 
   <g {a_style}>{a}</g>
   <g {b_style}>{b}</g>
+  <g {c_style}>{c}</g>
 </svg>
 '''
 
