@@ -1,25 +1,25 @@
-"""Colors for the lab notebook card, taken from scripts/banner.py."""
+"""Colors for the lab notebook card. The space palette matches scripts/banner.py."""
 
 PALETTES = {
     "dark": {
-        "bg": "#19381f", "panel": "#1f4227", "grid": "#21472a", "track": "#2f5a36",
-        "text": "#f7f6d8", "muted": "#a9c39a", "accent": "#eee82c", "blue": "#91cb3e",
+        "bg": "#060814", "panel": "#0d1330", "grid": "#151c44", "track": "#26306a",
+        "text": "#eaf1ff", "muted": "#8f9dc9", "accent": "#5ee7ff", "blue": "#8b6cff",
     },
     "light": {
-        "bg": "#f8faf0", "panel": "#eef5e2", "grid": "#e7efd8", "track": "#cfe0b8",
-        "text": "#19381f", "muted": "#4c934c", "accent": "#28965a", "blue": "#4c934c",
+        "bg": "#f5f7ff", "panel": "#e9edff", "grid": "#dfe4fb", "track": "#c3cbf0",
+        "text": "#0b1030", "muted": "#4c5a94", "accent": "#0891b2", "blue": "#5b3fe0",
     },
 }
 
-# One color per area, from lemon to forest green. Both themes share them.
+# One color per area, from amber through pink and violet to cyan. Both themes share them.
 AREA_COLORS = {
-    "runtime": "#eee82c",
-    "security": "#d6e681",
-    "harness": "#91cb3e",
-    "routing": "#28965a",
-    "perf": "#c5e38f",
-    "protocol": "#7fb069",
-    "research": "#4c934c",
-    "upkeep": "#a3c585",
-    "other": "#8aa58a",
+    "runtime": "#ffb454",
+    "security": "#ff5fb0",
+    "harness": "#8b6cff",
+    "routing": "#38bdf8",
+    "perf": "#22d3ee",
+    "protocol": "#a78bfa",
+    "research": "#3b82f6",
+    "upkeep": "#94a3d8",
+    "other": "#6b7aa8",
 }
