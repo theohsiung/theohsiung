@@ -2,32 +2,29 @@
      theohsiung / theohsiung — profile README
      Visual system: SVG banner (assets/) + shields for-the-badge section headers.
      GitHub strips CSS, so all design lives in images. Every badge is static
-     (no rate-limited stats cards). Palette: #19381f (forest) · #28965a (green) · #eee82c (lemon). Banner colors live in scripts/banner.py.
+     (no rate-limited stats cards). Palette: #060814 (space) · #6d4aff (violet) · #5ee7ff (cyan). Banner colors live in scripts/banner.py.
      The lab notebook card is drawn daily by scripts/labbook and read from the `labbook` branch.
      ============================================================ -->
 
 <div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg"/>
-    <img src="assets/banner-light.svg" alt="Theo Hsiung: AI for Science, LLM systems and agentic infrastructure. An animated banner cycles through an agent optimizing a liquid-cooling cold plate, vLLM Semantic Router routing prompts inside Claude Code, and a concept of routing compute to orbit." width="100%"/>
-  </picture>
+  <img src="assets/banner.svg" alt="Theo Hsiung: AI for Science, LLM systems and agentic infrastructure. An animated banner cycles through an agent optimizing a liquid-cooling cold plate, vLLM Semantic Router routing prompts inside Claude Code, and a concept of routing compute to orbit." width="100%"/>
 </div>
 
 <p align="center">
-  <a href="https://github.com/vllm-project/semantic-router/pulls?q=is%3Apr+author%3Atheohsiung+is%3Amerged"><img src="https://img.shields.io/badge/vLLM_Semantic_Router-60%2B_merged_PRs-28965a?style=for-the-badge&logo=github&logoColor=white&labelColor=19381f" alt="vLLM Semantic Router: 60+ merged PRs"/></a>
-  <a href="https://github.com/theohsiung/metaResearch"><img src="https://img.shields.io/badge/meta--research-AI_for_Science-28965a?style=for-the-badge&logo=github&logoColor=white&labelColor=19381f" alt="meta-research"/></a>
-  <a href="https://www.linkedin.com/in/theohsiung"><img src="https://img.shields.io/badge/LinkedIn-theohsiung-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=19381f" alt="LinkedIn"/></a>
+  <a href="https://github.com/vllm-project/semantic-router/pulls?q=is%3Apr+author%3Atheohsiung+is%3Amerged"><img src="https://img.shields.io/badge/vLLM_Semantic_Router-60%2B_merged_PRs-6d4aff?style=for-the-badge&logo=github&logoColor=white&labelColor=060814" alt="vLLM Semantic Router: 60+ merged PRs"/></a>
+  <a href="https://github.com/theohsiung/metaResearch"><img src="https://img.shields.io/badge/meta--research-AI_for_Science-6d4aff?style=for-the-badge&logo=github&logoColor=white&labelColor=060814" alt="meta-research"/></a>
+  <a href="https://www.linkedin.com/in/theohsiung"><img src="https://img.shields.io/badge/LinkedIn-theohsiung-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=060814" alt="LinkedIn"/></a>
 </p>
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20ABOUT-28965a?style=for-the-badge&labelColor=19381f" alt="About"/>
+<img src="https://img.shields.io/badge/%E2%9C%A6%20ABOUT-6d4aff?style=for-the-badge&labelColor=060814" alt="About"/>
 
 I work at Delta Electronics in Taiwan and serve as an Associate Research Scientist on the [vLLM Semantic Router](https://github.com/vllm-project/semantic-router) team. I started in **computer vision** (face reenactment, FLAME 3D faces, diffusion avatars, 3D scene text), moved into **LLM serving and routing**, and now work on **AI for Science**: letting a coding agent run the research loop itself. I like working close to the model: simulators, routing, serving, evaluation, and the agent layer on top.
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20NOW%20BUILDING-28965a?style=for-the-badge&labelColor=19381f" alt="Now building"/>
+<img src="https://img.shields.io/badge/%E2%9C%A6%20NOW%20BUILDING-6d4aff?style=for-the-badge&labelColor=060814" alt="Now building"/>
 
 <table width="100%">
 <thead><tr>
@@ -52,7 +49,7 @@ I work at Delta Electronics in Taiwan and serve as an Associate Research Scienti
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20WRITING-28965a?style=for-the-badge&labelColor=19381f" alt="Writing"/>
+<img src="https://img.shields.io/badge/%E2%9C%A6%20WRITING-6d4aff?style=for-the-badge&labelColor=060814" alt="Writing"/>
 
 <table width="100%">
 <tbody><tr>
@@ -72,7 +69,7 @@ I work at Delta Electronics in Taiwan and serve as an Associate Research Scienti
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20OPEN%20SOURCE-28965a?style=for-the-badge&labelColor=19381f" alt="Open-source contributions"/>
+<img src="https://img.shields.io/badge/%E2%9C%A6%20OPEN%20SOURCE-6d4aff?style=for-the-badge&labelColor=060814" alt="Open-source contributions"/>
 
 Selected merged pull requests to [vllm-project/semantic-router](https://github.com/vllm-project/semantic-router), grouped by area:
 
@@ -90,7 +87,7 @@ Elsewhere: [BerriAI/moyai#470](https://github.com/BerriAI/moyai/pull/470) centra
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20LAB%20NOTEBOOK-28965a?style=for-the-badge&labelColor=19381f" alt="Lab notebook"/>
+<img src="https://img.shields.io/badge/%E2%9C%A6%20LAB%20NOTEBOOK-6d4aff?style=for-the-badge&labelColor=060814" alt="Lab notebook"/>
 
 <a href="https://github.com/pulls?q=is%3Apr+author%3Atheohsiung+is%3Amerged">
 <picture>
@@ -101,32 +98,32 @@ Elsewhere: [BerriAI/moyai#470](https://github.com/BerriAI/moyai/pull/470) centra
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20RESEARCH%20ROOTS-28965a?style=for-the-badge&labelColor=19381f" alt="Research roots in computer vision"/>
+<img src="https://img.shields.io/badge/%E2%9C%A6%20RESEARCH%20ROOTS-6d4aff?style=for-the-badge&labelColor=060814" alt="Research roots in computer vision"/>
 
 - [**Syn3DTxt: Embedding 3D Cues for Scene Text Generation**](https://arxiv.org/abs/2505.18479): *CVPR 2025 Workshop (SyntaGen)*. Code: [SynTxt-Gen](https://github.com/theohsiung/SynTxt-Gen)
 - [**PASL: Pose-Adapted Shape Learning for Large-Pose Face Reenactment**](https://github.com/theohsiung/CVPR-LargePoseFaceReenactment), with follow-up work on [FLAME](https://github.com/theohsiung/PASL-with-FLAME) and [diffusion avatars](https://github.com/theohsiung/Diffusion_AVATAR)
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20STACK-28965a?style=for-the-badge&labelColor=19381f" alt="Stack"/>
+<img src="https://img.shields.io/badge/%E2%9C%A6%20STACK-6d4aff?style=for-the-badge&labelColor=060814" alt="Stack"/>
 
 <p>
-  <img src="https://img.shields.io/badge/Python-19381f?style=flat-square&logo=python" alt="Python"/>
-  <img src="https://img.shields.io/badge/Go-19381f?style=flat-square&logo=go" alt="Go"/>
-  <img src="https://img.shields.io/badge/Rust-19381f?style=flat-square&logo=rust" alt="Rust"/>
-  <img src="https://img.shields.io/badge/TypeScript-19381f?style=flat-square&logo=typescript" alt="TypeScript"/>
-  <img src="https://img.shields.io/badge/PyTorch-19381f?style=flat-square&logo=pytorch" alt="PyTorch"/>
-  <img src="https://img.shields.io/badge/CUDA-19381f?style=flat-square&logo=nvidia" alt="CUDA"/>
-  <img src="https://img.shields.io/badge/Envoy-19381f?style=flat-square&logo=envoyproxy" alt="Envoy"/>
-  <img src="https://img.shields.io/badge/Kubernetes-19381f?style=flat-square&logo=kubernetes" alt="Kubernetes"/>
-  <img src="https://img.shields.io/badge/Docker-19381f?style=flat-square&logo=docker" alt="Docker"/>
-  <img src="https://img.shields.io/badge/Claude%20Code-19381f?style=flat-square&logo=anthropic" alt="Claude Code"/>
-  <img src="https://img.shields.io/badge/MCP-19381f?style=flat-square&logo=modelcontextprotocol" alt="MCP"/>
+  <img src="https://img.shields.io/badge/Python-060814?style=flat-square&logo=python" alt="Python"/>
+  <img src="https://img.shields.io/badge/Go-060814?style=flat-square&logo=go" alt="Go"/>
+  <img src="https://img.shields.io/badge/Rust-060814?style=flat-square&logo=rust" alt="Rust"/>
+  <img src="https://img.shields.io/badge/TypeScript-060814?style=flat-square&logo=typescript" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/PyTorch-060814?style=flat-square&logo=pytorch" alt="PyTorch"/>
+  <img src="https://img.shields.io/badge/CUDA-060814?style=flat-square&logo=nvidia" alt="CUDA"/>
+  <img src="https://img.shields.io/badge/Envoy-060814?style=flat-square&logo=envoyproxy" alt="Envoy"/>
+  <img src="https://img.shields.io/badge/Kubernetes-060814?style=flat-square&logo=kubernetes" alt="Kubernetes"/>
+  <img src="https://img.shields.io/badge/Docker-060814?style=flat-square&logo=docker" alt="Docker"/>
+  <img src="https://img.shields.io/badge/Claude%20Code-060814?style=flat-square&logo=anthropic" alt="Claude Code"/>
+  <img src="https://img.shields.io/badge/MCP-060814?style=flat-square&logo=modelcontextprotocol" alt="MCP"/>
 </p>
 
 &nbsp;
 
-<img src="https://img.shields.io/badge/%E2%9C%BF%20THANKS-28965a?style=for-the-badge&labelColor=19381f" alt="Thanks"/>
+<img src="https://img.shields.io/badge/%E2%9C%A6%20THANKS-6d4aff?style=for-the-badge&labelColor=060814" alt="Thanks"/>
 
 I build on [@karpathy](https://github.com/karpathy)'s [autoresearch](https://github.com/karpathy/autoresearch), the [Stanford IRIS Lab](https://github.com/stanford-iris-lab)'s [meta-harness](https://github.com/stanford-iris-lab/meta-harness), and the work of the [vLLM](https://github.com/vllm-project) maintainers and the [semantic-router](https://github.com/vllm-project/semantic-router) team. It's a privilege to contribute back.
 

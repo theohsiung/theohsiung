@@ -5,7 +5,7 @@ Run `python3 scripts/banner.py` after changing a palette or a scene below.
 The banner alternates three scenes on one 30-second clock:
 
 1. meta-research: an agent runs experiments on a liquid-cooling cold plate.
-   Each experiment shows the design's heatmap (yellow = hot, green = cool)
+   Each experiment shows the design's heatmap (amber = hot, cyan = cool)
    and adds a point to the thermal-resistance vs. pressure-drop chart; the
    Pareto frontier moves toward the lower left.
 2. vSR: prompts pass through vLLM Semantic Router inside Claude Code. Each one
@@ -22,37 +22,21 @@ The heatmaps, chart and orbit scene are illustrative, so the banner shows no num
 import math
 from pathlib import Path
 
-PALETTES = {
-    "dark": {
-        "bg": "#19381f", "grid": "#21472a", "panel": "#1f4227", "track": "#2f5a36",
-        "text": "#f7f6d8", "muted": "#a9c39a", "fin": "#ffffff",
-        "wine": "#eee82c", "wine_text": "#eee82c",
-        "blue": "#91cb3e", "blue_line": "#91cb3e", "blue_text": "#c5e38f",
-        "tag": ("#f5ef3a", "#7ee05a"),
-        "blush": "#91cb3e", "ink": "#19381f", "sparkle": "#eee82c",
-        "body_hi": "#d9f99d", "body": "#3fb06a", "body_lo": "#145c35", "ear": "#eee82c", "iris": "#19381f",
-        "cheek": "#ff9e7a", "mouth": "#7a2e2e", "shadow": "#000000", "key": "#eee82c", "bokeh": "#91cb3e",
-    },
-    "light": {
-        "bg": "#f8faf0", "grid": "#e7efd8", "panel": "#eef5e2", "track": "#cfe0b8",
-        "text": "#19381f", "muted": "#4c934c", "fin": "#ffffff",
-        "wine": "#d4cd1a", "wine_text": "#7a760c",
-        "blue": "#91cb3e", "blue_line": "#28965a", "blue_text": "#4c934c",
-        "tag": ("#28965a", "#0f5f35"),
-        "blush": "#eee82c", "ink": "#19381f", "sparkle": "#d4cd1a",
-        "body_hi": "#e6fcb5", "body": "#28965a", "body_lo": "#145c35", "ear": "#eee82c", "iris": "#19381f",
-        "cheek": "#ff8a65", "mouth": "#7a2e2e", "shadow": "#19381f", "key": "#fff3a3", "bokeh": "#91cb3e",
-    },
+PALETTE = {
+    "bg": "#060814", "bg2": "#0c1233", "panel": "#0d1330", "track": "#26306a",
+    "text": "#eaf1ff", "muted": "#8f9dc9", "fin": "#ffffff",
+    "hot": "#ffb454", "hot_text": "#ffc978",            # amber: hot, or held for you
+    "cool": "#5ee7ff", "cool_line": "#5ee7ff", "cool_text": "#a5f1ff",  # cyan: cool, or routed
+    "violet": "#8b6cff", "pink": "#ff5fb0",
+    "tag": ("#5ee7ff", "#b69cff"),
 }
-BAR = ("#4c934c", "#91cb3e", "#eee82c")
-HEAT = [(0.0, "#4c934c"), (0.35, "#91cb3e"), (0.7, "#d6e681"), (1.0, "#eee82c")]  # cool -> hot
+BAR = ("#5ee7ff", "#8b6cff", "#ff5fb0")
+HEAT = [(0.0, "#38bdf8"), (0.35, "#7c5cff"), (0.7, "#ff5fb0"), (1.0, "#ffb454")]  # cool -> hot
 
 CYCLE = 30.0
 SCENE_A = (0.0, 9.4)  # visible window; each edge fades over FADE
 SCENE_B = (10.0, 19.6)
 SCENE_C = (20.0, 29.6)
-BEAT = 5.0  # seconds between mascot hops and sparkle twinkles
-BEATS = int(CYCLE // BEAT)
 FADE = 0.4
 STAGE_X = 690
 
@@ -211,11 +195,11 @@ def scene_a(p: dict, an: Anims) -> str:
         stairs += f" H{PX1}"
         t_off = times[k + 1] + 0.3 if k < last else a_off
         style = an.attr(window(times[k] + 0.3, t_off, 0.35), base=f"opacity:{1 if k == last else 0};")
-        out.append(f'<g {style}><path d="{stairs} V{PY1} Z" fill="{p["blue"]}" fill-opacity=".12"/>'
-                   f'<path d="{stairs}" fill="none" stroke="{p["blue_line"]}" stroke-width="1.5" stroke-dasharray="4 3"/></g>')
+        out.append(f'<g {style}><path d="{stairs} V{PY1} Z" fill="{p["cool"]}" fill-opacity=".12"/>'
+                   f'<path d="{stairs}" fill="none" stroke="{p["cool_line"]}" stroke-width="1.5" stroke-dasharray="4 3"/></g>')
 
     # experiment points: filled while on the frontier, hollow once dominated
-    on = f"fill:{p['blue']};stroke:{p['blue_line']}"
+    on = f"fill:{p['cool']};stroke:{p['cool_line']}"
     off = f"fill:{p['bg']};stroke:{p['muted']}"
     for i, (r, dp) in enumerate(points):
         x, y = chart_xy(r, dp)
@@ -234,8 +218,8 @@ def scene_a(p: dict, an: Anims) -> str:
     # experiment log
     for i, (hyp, *_rest) in enumerate(EXPERIMENTS):
         kept = dominated_at.get(i, CYCLE) > times[i] + 0.6
-        verdict = (f'<tspan fill="{p["blue_text"]}">✓ frontier</tspan>' if kept
-                   else f'<tspan fill="{p["wine_text"]}">✗ dominated</tspan>')
+        verdict = (f'<tspan fill="{p["cool_text"]}">✓ frontier</tspan>' if kept
+                   else f'<tspan fill="{p["hot_text"]}">✗ dominated</tspan>')
         t_off = times[i + 1] - 0.25 if i < last else a_off
         style = an.attr(window(times[i], t_off, 0.25), base=f"opacity:{1 if i == last else 0};", cls="log")
         out.append(f'<text {style} x="{STAGE_X}" y="292">exp {i + 1:02d} · {esc(hyp)} → {verdict}'
@@ -259,7 +243,7 @@ def scene_b(p: dict, an: Anims) -> str:
     starts = [REQ_START + REQ_STEP * i for i in range(len(REQUESTS))]
 
     def line(route: str) -> str:
-        return p["wine_text"] if route == "held" else p["blue_line"]
+        return p["hot_text"] if route == "held" else p["cool_line"]
 
     out = []
     # destinations light up as a request lands
@@ -290,7 +274,7 @@ def scene_b(p: dict, an: Anims) -> str:
                        (t + 1.7, f"transform:scaleX({v})"), (t + 2.0, "transform:scaleX(.001)")]
         bar = f'x="{RX0 + 10}" y="{y + 6}" width="{RX1 - RX0 - 20}" height="5" rx="2.5"'
         out.append(f'<text x="{RX0 + 10}" y="{y}" class="tiny">{name}</text><rect {bar} fill="{p["track"]}"/>'
-                   f'<rect {an.attr(frames, cls="fl")} {bar} fill="{p["wine"] if name == "risk" else p["blue"]}"/>')
+                   f'<rect {an.attr(frames, cls="fl")} {bar} fill="{p["hot"] if name == "risk" else p["cool"]}"/>')
 
     # each request: the prompt slides into the router, and what the model sees slides out to its route
     for t, (prompt, seen, route, _levels, log) in zip(starts, REQUESTS):
@@ -305,7 +289,7 @@ def scene_b(p: dict, an: Anims) -> str:
                   (t + 2.0, f"opacity:1;transform:{move}"), (t + 2.15, f"opacity:0;transform:{move}")]
         out.append(f'<g {an.attr(frames, base="opacity:0;")}>{chip(RX1 + 4, MID_Y, seen, 10, line(route), p)}</g>')
 
-        color = p["wine_text"] if route == "held" else p["blue_text"]
+        color = p["hot_text"] if route == "held" else p["cool_text"]
         style = an.attr(window(t + 1.1, t + 2.05, 0.2), base="opacity:0;", cls="log")
         out.append(f'<text {style} x="{STAGE_X}" y="292"><tspan fill="{color}">{esc(log)}</tspan></text>')
     return "".join(out)
@@ -360,8 +344,9 @@ def scene_c(p: dict, an: Anims) -> str:
     # sky and ground
     out += [f'<circle cx="{x}" cy="{y}" r="{r * 1.3:.1f}" fill="{p["text"]}" opacity=".7"/>' for x, y, r in STARS]
     out.append(f'<path d="{arc_path(HORIZON)} V320 H692 Z" fill="url(#earth)"/>'
-               f'<path d="{arc_path(HORIZON)}" fill="none" stroke="{p["blue_line"]}" stroke-width="1.6" opacity=".75"/>'
-               f'<path d="{arc_path(ORBIT)}" fill="none" stroke="{p["muted"]}" stroke-opacity=".6" stroke-width="1.6" stroke-dasharray="3 5"/>'
+               f'<path d="{arc_path(HORIZON)}" fill="none" stroke="{p["cool_line"]}" stroke-width="7" opacity=".16"/>'
+               f'<path d="{arc_path(HORIZON)}" fill="none" stroke="{p["cool_line"]}" stroke-width="1.6" opacity=".85"/>'
+               f'<path d="{arc_path(ORBIT)}" fill="none" stroke="{p["violet"]}" stroke-opacity=".7" stroke-width="1.6" stroke-dasharray="3 5"/>'
                f'<text x="700" y="126" class="tiny">orbit</text><text x="700" y="248" class="tiny">ground</text>')
 
     # orbit nodes drift a little along the arc; the one that does the work lights up
@@ -369,7 +354,7 @@ def scene_c(p: dict, an: Anims) -> str:
     for i, (x, y) in enumerate(sats):
         drift = [(0.0, "transform:translate(0,0)"), (CYCLE / 2, "transform:translate(10px,0)"), (CYCLE, "transform:translate(0,0)")]
         windows = [(work["orbit"] + 1.4, work["orbit"] + 2.9)] if i == 1 else []
-        body = lit(f"fill:{p['muted']}", f"fill:{p['blue']}", windows) if windows else [(0.0, f"fill:{p['muted']}")]
+        body = lit(f"fill:{p['muted']}", f"fill:{p['cool']}", windows) if windows else [(0.0, f"fill:{p['muted']}")]
         out.append(f'<g transform="translate({x:.1f} {y:.1f}) scale(1.7)"><g {an.attr(drift)}>'
                    f'<rect x="-17" y="-2.5" width="9" height="5" rx="1" fill="{p["panel"]}" stroke="{p["track"]}"/>'
                    f'<rect x="8" y="-2.5" width="9" height="5" rx="1" fill="{p["panel"]}" stroke="{p["track"]}"/>'
@@ -377,7 +362,7 @@ def scene_c(p: dict, an: Anims) -> str:
 
     # ground nodes
     for name, (x, y), label, t_work in (("gpu", gpu, "GPUs", starts[1] + 1.4), ("station", station, "station", starts[0] + 2.1)):
-        frames = lit(f"stroke:{p['track']}", f"stroke:{p['blue_line']}", [(t_work, t_work + 1.3)])
+        frames = lit(f"stroke:{p['track']}", f"stroke:{p['cool_line']}", [(t_work, t_work + 1.3)])
         out.append(f'<g transform="translate({x:.1f} {y - 11:.1f}) scale(1.35)"><rect {an.attr(frames)} x="-12" y="-7" width="24" height="14" rx="3" '
                    f'fill="{p["panel"]}" stroke-width="1.6"/>'
                    + ('<path d="M-6 -2 H6 M-6 2 H6" stroke="' + p["muted"] + '" stroke-width="1.4" stroke-linecap="round"/>' if name == "gpu"
@@ -387,7 +372,7 @@ def scene_c(p: dict, an: Anims) -> str:
     # router: outline takes the route's color while it decides
     frames = [(0.0, f"stroke:{p['track']}")]
     for t, (_, route, _) in zip(starts, TASKS):
-        c = p["wine"] if route == "queue" else p["blue_line"]
+        c = p["hot"] if route == "queue" else p["cool_line"]
         end = t + (2.2 if route == "queue" else 1.5)
         frames += [(t + 0.6, f"stroke:{p['track']}"), (t + 0.8, f"stroke:{c}"), (end, f"stroke:{c}"), (end + 0.3, f"stroke:{p['track']}")]
     out.append(f'<rect {an.attr(frames)} x="{rx - 35}" y="{ry - 17}" width="70" height="34" rx="9" fill="{p["panel"]}" stroke-width="1.6"/>'
@@ -407,7 +392,7 @@ def scene_c(p: dict, an: Anims) -> str:
                  (t + 0.95, "opacity:0;transform:translateX(40px)")]
         out.append(f'<g {an.attr(slide, base="opacity:0;")}>{chip(STAGE_X, ry, task, 11, p["track"], p)}</g>')
 
-        color = p["wine"] if route == "queue" else p["blue_line"]
+        color = p["hot"] if route == "queue" else p["cool_line"]
         if route == "orbit":
             out.append(beam((rx, ry - 17), (main_sat[0], main_sat[1] + 6), t + 0.9, color))
             out.append(beam((main_sat[0], main_sat[1] + 6), (station[0], station[1] - 20), t + 1.6, color))
@@ -416,129 +401,124 @@ def scene_c(p: dict, an: Anims) -> str:
         else:
             hold = window(t + 1.0, t + 2.6, 0.2)
             out.append(f'<text {an.attr(hold, base="opacity:0;", cls="small")} x="{rx}" y="{ry + 36}" text-anchor="middle" '
-                       f'fill="{p["wine_text"]}">queued · next pass</text>')
-        text_color = p["wine_text"] if route == "queue" else p["blue_text"]
+                       f'fill="{p["hot_text"]}">queued · next pass</text>')
+        text_color = p["hot_text"] if route == "queue" else p["cool_text"]
         style = an.attr(window(t + 1.0, t + 2.9, 0.2), base="opacity:0;", cls="log")
         out.append(f'<text {style} x="{STAGE_X}" y="292"><tspan fill="{text_color}">{esc(caption)}</tspan></text>')
     return "".join(out)
 
 
-# ---------------------------------------------------------------- decoration
-SPARKLES = [(486, 58, 9, 0.0), (652, 132, 7, 1.3), (30, 44, 8, 2.6), (430, 238, 6, 3.9), (520, 286, 7, 5.2)]
+# ---------------------------------------------------------------- space
+NEBULAE = [(1010, 20, 340, "#6d4aff", 0.50), (240, 330, 300, "#1fb6ff", 0.24),
+           (1190, 310, 240, "#ff4fa3", 0.22), (600, 100, 170, "#3b82f6", 0.18)]
+TWINKLE_PERIODS = (3, 5, 6, 10)  # each divides CYCLE, so every star loops without a jump
+SHOOTERS = [(60, 10, 4.0), (250, 18, 14.0), (140, 8, 24.0)]  # start x, start y, start time
+PLANET = (596, 100, 30)  # center x, center y, radius
+TILT = -18
 
 
-def sparkle(x: float, y: float, r: float) -> str:
-    """A four-pointed star."""
-    k = r * 0.28
-    return (f'<path d="M{x} {y - r} Q{x + k} {y - k} {x + r} {y} Q{x + k} {y + k} {x} {y + r} '
-            f'Q{x - k} {y + k} {x - r} {y} Q{x - k} {y - k} {x} {y - r} Z"/>')
+def lcg(seed: int):
+    """A small deterministic random stream, so the starfield is the same on every build."""
+    x = seed
+    while True:
+        x = (x * 1103515245 + 12345) & 0x7FFFFFFF
+        yield x / 0x7FFFFFFF
 
 
-def leaf(x: float, y: float, s: float) -> str:
-    """A leaf pointing up and to the right, with a center vein."""
-    return (f'<path d="M{x - s} {y + s} Q{x - s} {y - s} {x + s} {y - s} Q{x + s} {y + s} {x - s} {y + s} Z"/>'
-            f'<path d="M{x - s} {y + s} L{x + s * 0.4} {y - s * 0.4}" stroke="{"#19381f"}" stroke-opacity=".35" stroke-width="1"/>')
+def space_defs(p: dict) -> str:
+    nebulae = "".join(
+        f'<radialGradient id="neb{i}" gradientUnits="userSpaceOnUse" cx="{x}" cy="{y}" r="{r}">'
+        f'<stop offset="0" stop-color="{c}" stop-opacity="{o}"/><stop offset="1" stop-color="{c}" stop-opacity="0"/></radialGradient>'
+        for i, (x, y, r, c, o) in enumerate(NEBULAE))
+    return (f'<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{p["bg"]}"/>'
+            f'<stop offset="1" stop-color="{p["bg2"]}"/></linearGradient>{nebulae}'
+            f'<linearGradient id="streak" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/>'
+            f'<stop offset="1" stop-color="#fff" stop-opacity=".9"/></linearGradient>')
 
 
-BOKEH = [(120, 60, 46, 0.0), (330, 250, 34, 4.0), (520, 40, 28, 8.0), (760, 300, 40, 12.0), (1120, 260, 52, 16.0)]
-
-
-def lighting(p: dict, an: Anims) -> str:
-    """Film-style lighting: a warm key light behind the title and soft out-of-focus bokeh drifting past."""
-    out = [f'<defs><radialGradient id="key" cx="0.35" cy="0.3" r="0.6">'
-           f'<stop offset="0" stop-color="{p["key"]}" stop-opacity=".55"/><stop offset="1" stop-color="{p["key"]}" stop-opacity="0"/>'
-           f'</radialGradient><filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter></defs>'
-           f'<rect width="1200" height="320" fill="url(#key)"/>']
-    for x, y, r, t in BOKEH:
-        drift = [(0.0, "transform:translate(0,0)"), (CYCLE / 2, "transform:translate(18px,-10px)"), (CYCLE, "transform:translate(0,0)")]
-        out.append(f'<circle {an.attr(drift)} cx="{x}" cy="{y}" r="{r}" fill="{p["bokeh"]}" opacity=".16" filter="url(#soft)"/>')
+def starfield(p: dict, an: Anims) -> str:
+    """Nebula glow, about a hundred stars (every ninth one twinkles), and three shooting stars."""
+    out = [f'<rect width="1200" height="320" fill="url(#sky)"/>']
+    out += [f'<rect width="1200" height="320" fill="url(#neb{i})"/>' for i in range(len(NEBULAE))]
+    rnd = lcg(11)
+    dots: dict[float, list[str]] = {0.35: [], 0.6: [], 0.9: []}
+    twinkling = []
+    for i in range(130):
+        x, y, r, o = next(rnd) * 1200, 8 + next(rnd) * 304, 0.5 + next(rnd), next(rnd)
+        if 40 < x < 600 and 76 < y < 212:  # keep the title area clear
+            continue
+        level = 0.35 if o < 0.5 else 0.6 if o < 0.85 else 0.9
+        if i % 9 == 0:
+            twinkling.append((x, y, r, level))
+        else:
+            dots[level].append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{r:.1f}"/>')
+    out += [f'<g fill="{p["text"]}" fill-opacity="{level}">{"".join(items)}</g>' for level, items in dots.items()]
+    tints = (p["text"], p["cool"], p["pink"], p["text"])
+    for k, (x, y, r, level) in enumerate(twinkling):
+        period = TWINKLE_PERIODS[k % len(TWINKLE_PERIODS)]
+        hi, lo = (level, level * 0.15) if k % 2 else (level * 0.15, level)
+        frames = []
+        for j in range(int(CYCLE // period)):
+            frames += [(j * period, f"opacity:{hi:.2f}"), (j * period + period / 2, f"opacity:{lo:.2f}")]
+        frames.append((CYCLE, f"opacity:{hi:.2f}"))
+        out.append(f'<circle {an.attr(frames, base=f"opacity:{level};")} cx="{x:.0f}" cy="{y:.0f}" r="{r * 1.2:.1f}" fill="{tints[k % 4]}"/>')
+    for x, y, t in SHOOTERS:
+        frames = [(0.0, "opacity:0;transform:translateX(0)"), (t, "opacity:0;transform:translateX(0)"),
+                  (t + 0.05, "opacity:1;transform:translateX(0)"), (t + 0.85, "opacity:0;transform:translateX(230px)")]
+        out.append(f'<g transform="translate({x} {y}) rotate(15)"><g {an.attr(frames, base="opacity:0;", timing="ease-in")}>'
+                   f'<rect x="-80" y="-1" width="80" height="2" rx="1" fill="url(#streak)"/><circle r="2" fill="#fff"/></g></g>')
     return "".join(out)
 
 
-def mascot(p: dict, an: Anims) -> str:
-    """A shaded 3D-style blob mascot that hops with squash and stretch, looks around and blinks."""
-    cx, cy = 596, 92
+def planet(p: dict, an: Anims) -> str:
+    """A ringed planet with a moon that passes behind it and in front of it."""
+    cx, cy, r = PLANET
+    ring, orbit_rx, orbit_ry = 54, 72, 20
     defs = (f'<defs>'
-            f'<radialGradient id="body" cx="0.35" cy="0.28" r="0.85">'
-            f'<stop offset="0" stop-color="{p["body_hi"]}"/><stop offset=".45" stop-color="{p["body"]}"/><stop offset="1" stop-color="{p["body_lo"]}"/></radialGradient>'
-            f'<radialGradient id="eye" cx="0.4" cy="0.35" r="0.75"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe8dc"/></radialGradient>'
-            f'<radialGradient id="cheek"><stop offset="0" stop-color="{p["cheek"]}" stop-opacity=".75"/><stop offset="1" stop-color="{p["cheek"]}" stop-opacity="0"/></radialGradient>'
-            f'<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>'
+            f'<radialGradient id="pbody" cx=".32" cy=".28" r=".9"><stop offset="0" stop-color="#c4f5ff"/><stop offset=".3" stop-color="#5b8cff"/>'
+            f'<stop offset=".7" stop-color="#3b2a9c"/><stop offset="1" stop-color="#120a3a"/></radialGradient>'
+            f'<radialGradient id="pshade" cx=".3" cy=".28" r="1"><stop offset=".45" stop-color="#000" stop-opacity="0"/>'
+            f'<stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>'
+            f'<radialGradient id="pglow" gradientUnits="userSpaceOnUse" cx="{cx}" cy="{cy}" r="120"><stop offset="0" stop-color="{p["cool"]}" stop-opacity=".28"/>'
+            f'<stop offset="1" stop-color="{p["cool"]}" stop-opacity="0"/></radialGradient>'
+            f'<linearGradient id="pring" x1="0" x2="1"><stop offset="0" stop-color="{p["pink"]}"/><stop offset=".5" stop-color="{p["hot"]}"/>'
+            f'<stop offset="1" stop-color="{p["pink"]}"/></linearGradient>'
+            f'<clipPath id="pback"><rect x="0" y="0" width="1200" height="{cy}"/></clipPath>'
+            f'<clipPath id="pfront"><rect x="0" y="{cy}" width="1200" height="320"/></clipPath>'
             f'</defs>')
 
-    # one hop per 5 seconds: anticipate, launch, hang, land, settle
-    hop = []
-    for k in range(BEATS):
-        t = k * BEAT
-        hop += [(t, "transform:translateY(0) scale(1,1)"), (t + 0.25, "transform:translateY(0) scale(1.14,.84)"),
-                (t + 0.5, "transform:translateY(-24px) scale(.9,1.12)"), (t + 0.8, "transform:translateY(-30px) scale(1,1)"),
-                (t + 1.1, "transform:translateY(0) scale(1.16,.82)"), (t + 1.3, "transform:translateY(0) scale(.96,1.05)"),
-                (t + 1.5, "transform:translateY(0) scale(1,1)")]
-    shadow_frames = []
-    for k in range(BEATS):
-        t = k * BEAT
-        shadow_frames += [(t, "transform:scale(1);opacity:.55"), (t + 0.25, "transform:scale(1.15);opacity:.6"),
-                          (t + 0.8, "transform:scale(.6);opacity:.25"), (t + 1.1, "transform:scale(1.2);opacity:.6"),
-                          (t + 1.5, "transform:scale(1);opacity:.55")]
-    shadow = (f'<ellipse {an.attr(shadow_frames, base="opacity:.5;", cls="fb")} cx="{cx}" cy="{cy + 44}" rx="30" ry="5" '
-              f'fill="{p["shadow"]}" filter="url(#shadow)"/>')
+    def ring_arc(sweep: int, rx: float, ry: float, width: float, opacity: float) -> str:
+        return (f'<path d="M{cx - rx} {cy} A{rx} {ry} 0 0 {sweep} {cx + rx} {cy}" fill="none" stroke="url(#pring)" '
+                f'stroke-width="{width}" stroke-opacity="{opacity}" stroke-linecap="round"/>')
 
-    body = (f'<path d="M{cx - 34} {cy + 38} C{cx - 40} {cy} {cx - 30} {cy - 30} {cx - 22} {cy - 40} L{cx - 13} {cy - 24} '
-            f'C{cx - 4} {cy - 28} {cx + 4} {cy - 28} {cx + 13} {cy - 24} L{cx + 22} {cy - 40} '
-            f'C{cx + 30} {cy - 30} {cx + 40} {cy} {cx + 34} {cy + 38} Q{cx} {cy + 46} {cx - 34} {cy + 38} Z" fill="url(#body)"/>'
-            f'<path d="M{cx - 22} {cy - 33} L{cx - 16} {cy - 24} L{cx - 23} {cy - 22} Z" fill="{p["ear"]}" opacity=".8"/>'
-            f'<path d="M{cx + 22} {cy - 33} L{cx + 16} {cy - 24} L{cx + 23} {cy - 22} Z" fill="{p["ear"]}" opacity=".8"/>'
-            f'<ellipse cx="{cx - 14}" cy="{cy - 16}" rx="9" ry="5" fill="#ffffff" opacity=".35" transform="rotate(-25 {cx - 14} {cy - 16})"/>'
-            f'<ellipse cx="{cx - 21}" cy="{cy + 14}" rx="8" ry="5" fill="url(#cheek)"/>'
-            f'<ellipse cx="{cx + 21}" cy="{cy + 14}" rx="8" ry="5" fill="url(#cheek)"/>')
+    def moon(clip: str) -> str:
+        spin = an.attr([(0.0, "transform:rotate(0deg)"), (CYCLE, "transform:rotate(1080deg)")], timing="linear")
+        return (f'<g transform="rotate({TILT} {cx} {cy})"><g clip-path="url(#{clip})">'
+                f'<g transform="translate({cx} {cy}) scale(1 {orbit_ry / orbit_rx:.4f})"><g {spin}>'
+                f'<ellipse cx="{orbit_rx}" cy="0" rx="4.6" ry="{4.6 * orbit_rx / orbit_ry:.1f}" fill="#dfe8ff"/>'
+                f'</g></g></g></g>')
 
-    look = [(0.0, "transform:translateX(0)"), (2.2, "transform:translateX(0)"), (2.5, "transform:translateX(-2.5px)"),
-            (4.2, "transform:translateX(-2.5px)"), (4.5, "transform:translateX(2.5px)"), (7.0, "transform:translateX(2.5px)"),
-            (7.3, "transform:translateX(0)")]
-    pupils = "".join(f'<circle cx="{x}" cy="{cy + 2}" r="4.6" fill="{p["iris"]}"/><circle cx="{x}" cy="{cy + 2}" r="2.4" fill="#0b1a10"/>'
-                     f'<circle cx="{x - 1.6}" cy="{cy - 0.4}" r="1.5" fill="#ffffff"/><circle cx="{x + 1.6}" cy="{cy + 3.6}" r=".7" fill="#ffffff"/>'
-                     for x in (cx - 11, cx + 11))
-    blink = [(0.0, "transform:scaleY(1)"), (3.0, "transform:scaleY(1)"), (3.1, "transform:scaleY(.08)"), (3.22, "transform:scaleY(1)"),
-             (13.0, "transform:scaleY(1)"), (13.1, "transform:scaleY(.08)"), (13.22, "transform:scaleY(1)"),
-             (23.0, "transform:scaleY(1)"), (23.1, "transform:scaleY(.08)"), (23.22, "transform:scaleY(1)")]
-    eyes = (f'<g {an.attr(blink, base="", cls="fb")}>'
-            f'<ellipse cx="{cx - 11}" cy="{cy}" rx="8" ry="9.5" fill="url(#eye)"/><ellipse cx="{cx + 11}" cy="{cy}" rx="8" ry="9.5" fill="url(#eye)"/>'
-            f'<g {an.attr(look)}>{pupils}</g></g>')
-    mouth = (f'<path d="M{cx - 5} {cy + 13} Q{cx} {cy + 19} {cx + 5} {cy + 13}" fill="{p["mouth"]}" stroke="{p["iris"]}" '
-             f'stroke-width="1.4" stroke-linejoin="round"/>')
-    return defs + shadow + f'<g {an.attr(hop, base="", cls="fbot")}>{body}{eyes}{mouth}</g>'
-
-
-def decoration(p: dict, an: Anims) -> str:
-    """Twinkling sparkles, the mascot, and a leaf that floats up after each hop."""
-    out = []
-    for x, y, r, t in SPARKLES:
-        frames = []
-        for k in range(BEATS):
-            t0 = (t + k * BEAT) % CYCLE
-            frames += [(t0, "opacity:.25;transform:scale(.6)"), (t0 + 0.5, "opacity:1;transform:scale(1.15)"),
-                       (t0 + 1.2, "opacity:.25;transform:scale(.6)")]
-        out.append(f'<g fill="{p["sparkle"]}" {an.attr(frames, base="opacity:.8;", cls="fb")}>{sparkle(x, y, r)}</g>')
-    out.append(mascot(p, an))
-    for t in (1.0, 11.0, 21.0):
-        rise = [(0.0, "opacity:0;transform:translateY(0)"), (t, "opacity:0;transform:translateY(0)"),
-                (t + 0.3, "opacity:1;transform:translateY(-6px)"), (t + 2.0, "opacity:0;transform:translateY(-34px)")]
-        out.append(f'<g fill="{p["wine"]}" {an.attr(rise, base="opacity:0;")}>{leaf(626, 50, 7)}</g>')
-    return "".join(out)
+    orbit_line = (f'<ellipse cx="{cx}" cy="{cy}" rx="{orbit_rx}" ry="{orbit_ry}" fill="none" stroke="{p["track"]}" '
+                  f'stroke-width="1" stroke-dasharray="2 4" transform="rotate({TILT} {cx} {cy})"/>')
+    return (defs + f'<circle cx="{cx}" cy="{cy}" r="120" fill="url(#pglow)"/>' + orbit_line
+            + f'<g transform="rotate({TILT} {cx} {cy})">{ring_arc(1, ring, 13, 5, .85)}{ring_arc(1, ring - 10, 9, 1.6, .5)}</g>'
+            + moon("pback")
+            + f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="url(#pbody)"/><circle cx="{cx}" cy="{cy}" r="{r}" fill="url(#pshade)"/>'
+            + f'<circle cx="{cx}" cy="{cy}" r="{r + 1}" fill="none" stroke="{p["cool"]}" stroke-opacity=".45" stroke-width="1.6"/>'
+            + f'<ellipse cx="{cx - 11}" cy="{cy - 14}" rx="9" ry="5" fill="#fff" opacity=".28" transform="rotate(-30 {cx - 11} {cy - 14})"/>'
+            + f'<g transform="rotate({TILT} {cx} {cy})">{ring_arc(0, ring, 13, 5, .95)}{ring_arc(0, ring - 10, 9, 1.6, .55)}</g>'
+            + moon("pfront"))
 
 
 # ---------------------------------------------------------------- banner
 def typed(command: str, start: float, p: dict, an: Anims) -> str:
-    """A command line typed out from `start`, revealed by a cover that shrinks one character at a time."""
-    width = len(command) * 8.4 + 8
-    frames = [(0.0, "transform:scaleX(1)"), (start, "transform:scaleX(1)"), (start + 0.9, "transform:scaleX(0)")]
-    cover = an.attr(frames, base="transform:scaleX(0);", cls="fr", timing=f"steps({len(command)})")
-    return (f'<text x="66" y="262" class="mono">{esc(command)}</text>'
-            f'<rect {cover} x="60" y="246" width="{width:.0f}" height="22" fill="{p["bg"]}"/>')
+    """A command line typed out from `start`, revealed one character at a time by a clip."""
+    frames = [(0.0, "clip-path:inset(0 100% 0 0)"), (start, "clip-path:inset(0 100% 0 0)"), (start + 0.9, "clip-path:inset(0 0% 0 0)")]
+    return f'<text {an.attr(frames, cls="mono", timing=f"steps({len(command)})")} x="66" y="262">{esc(command)}</text>'
 
 
 def scene_header(title: str, subtitle: str, active: int, p: dict) -> str:
-    dots = "".join(f'<circle cx="{1150 + k * 14}" cy="46" r="4" fill="{p["blue"] if k == active else p["track"]}"/>'
+    dots = "".join(f'<circle cx="{1150 + k * 14}" cy="46" r="4" fill="{p["cool"] if k == active else p["track"]}"/>'
                    for k in range(3))
     return f'<text x="{STAGE_X}" y="50" class="title">{title}<tspan class="subtitle"> · {subtitle}</tspan></text>{dots}'
 
@@ -554,22 +534,23 @@ def render(p: dict) -> str:
          + typed("$ claude --plugin vsr", SCENE_B[0] + 0.2, p, an) + scene_b(p, an))
     c = (scene_header("orbit", "concept · routing beyond the data center", 2, p)
          + typed("# what if routing reached orbit?", SCENE_C[0] + 0.2, p, an) + scene_c(p, an))
-    light = lighting(p, an)
-    deco = decoration(p, an)
+    sky = starfield(p, an)
+    world = planet(p, an)
     keyframes = "\n      ".join(an.rules)
     mono = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-    sans = 'ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", "Nunito", -apple-system, "Segoe UI", sans-serif'
+    sans = '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif'
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-labelledby="t d">
   <title id="t">Theo Hsiung</title>
-  <desc id="d">AI for Science, LLM systems and agentic infrastructure. Three alternating scenes: an agent optimizing a liquid-cooling cold plate, pushing the Pareto frontier of thermal resistance and pressure drop; vLLM Semantic Router inside Claude Code sending each prompt to the right model, masking a secret, and holding a risky Bash command; and a concept of routing compute to orbit, where raw imagery is processed on an orbital node, heavy training goes to ground GPUs, and a task with no ground link waits for the next pass.</desc>
+  <desc id="d">AI for Science, LLM systems and agentic infrastructure, over a night sky with a ringed planet and a moon. Three alternating scenes: an agent optimizing a liquid-cooling cold plate, pushing the Pareto frontier of thermal resistance and pressure drop; vLLM Semantic Router inside Claude Code sending each prompt to the right model, masking a secret, and holding a risky Bash command; and a concept of routing compute to orbit, where raw imagery is processed on an orbital node, heavy training goes to ground GPUs, and a task with no ground link waits for the next pass.</desc>
   <!-- Generated by scripts/banner.py; edit the palette and scenes there, not here. -->
   <defs>
-    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="{p["grid"]}"/></pattern>
     <clipPath id="round"><rect width="1200" height="320" rx="16"/></clipPath>
     <linearGradient id="bar" x1="0" x2="1"><stop offset="0" stop-color="{BAR[0]}"/><stop offset=".5" stop-color="{BAR[1]}"/><stop offset="1" stop-color="{BAR[2]}"/></linearGradient>
     <linearGradient id="tag" x1="0" x2="1"><stop offset="0" stop-color="{p["tag"][0]}"/><stop offset="1" stop-color="{p["tag"][1]}"/></linearGradient>
+    <linearGradient id="nameg" x1="0" x2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#b8d4ff"/></linearGradient>
+    {space_defs(p)}
     <style>
-      .name {{ font: 800 64px {sans}; fill: {p["text"]}; letter-spacing: -1px; }}
+      .name {{ font: 800 64px {sans}; fill: url(#nameg); letter-spacing: -1.5px; }}
       .tag {{ font: 600 22px {sans}; fill: url(#tag); }}
       .sub {{ font: 400 15px {sans}; fill: {p["muted"]}; }}
       .mono {{ font: 500 14px {mono}; fill: {p["muted"]}; }}
@@ -579,29 +560,24 @@ def render(p: dict) -> str:
       .tiny {{ font: 500 10px {mono}; fill: {p["muted"]}; }}
       .log {{ font: 500 12px {mono}; fill: {p["muted"]}; }}
       .chip {{ font-family: {mono}; font-weight: 500; fill: {p["text"]}; }}
-      .router {{ font: 700 14px {mono}; fill: {p["blue_text"]}; }}
+      .router {{ font: 700 14px {mono}; fill: {p["cool_text"]}; }}
 
       .a {{ animation-duration: {CYCLE:g}s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }}
       .fb {{ transform-box: fill-box; transform-origin: center; }}
       .fl {{ transform-box: fill-box; transform-origin: left center; }}
-      .fr {{ transform-box: fill-box; transform-origin: right center; }}
-      .fbot {{ transform-box: fill-box; transform-origin: center bottom; }}
       {keyframes}
 
       @media (prefers-reduced-motion: reduce) {{ * {{ animation: none !important; }} }}
     </style>
   </defs>
 
-  <rect width="1200" height="320" rx="16" fill="{p["bg"]}"/>
-  <rect width="1200" height="320" rx="16" fill="url(#dots)"/>
-  <g clip-path="url(#round)">{light}</g>
-  <rect width="1200" height="4" fill="url(#bar)" clip-path="url(#round)"/>
+  <g clip-path="url(#round)">{sky}<rect width="1200" height="4" fill="url(#bar)"/></g>
 
   <text x="64" y="122" class="name">Theo Hsiung</text>
   <text x="66" y="164" class="tag">AI for Science · LLM Systems · Agentic Infra</text>
   <text x="66" y="196" class="sub">Associate Research Scientist, vLLM Semantic Router · Delta Electronics · Taiwan</text>
 
-  {deco}
+  {world}
 
   <g {a_style}>{a}</g>
   <g {b_style}>{b}</g>
@@ -611,7 +587,6 @@ def render(p: dict) -> str:
 
 
 if __name__ == "__main__":
-    assets = Path(__file__).resolve().parent.parent / "assets"
-    for theme, palette in PALETTES.items():
-        (assets / f"banner-{theme}.svg").write_text(render(palette), encoding="utf-8")
-        print(f"wrote assets/banner-{theme}.svg")
+    out = Path(__file__).resolve().parent.parent / "assets" / "banner.svg"
+    out.write_text(render(PALETTE), encoding="utf-8")
+    print(f"wrote {out.relative_to(out.parent.parent)}")
