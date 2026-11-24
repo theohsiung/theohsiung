@@ -5,7 +5,7 @@ Run `python3 scripts/banner.py` after changing a palette or a scene below.
 The banner alternates three scenes on one 30-second clock:
 
 1. meta-research: an agent runs experiments on a liquid-cooling cold plate.
-   Each experiment shows the design's heatmap (amber = hot, cyan = cool)
+   Each experiment shows the design's heatmap (orange = hot, teal = cool)
    and adds a point to the thermal-resistance vs. pressure-drop chart; the
    Pareto frontier moves toward the lower left.
 2. vSR: prompts pass through vLLM Semantic Router inside Claude Code. Each one
@@ -22,16 +22,35 @@ The heatmaps, chart and orbit scene are illustrative, so the banner shows no num
 import math
 from pathlib import Path
 
-PALETTE = {
-    "bg": "#060814", "bg2": "#0c1233", "panel": "#0d1330", "track": "#26306a",
-    "text": "#eaf1ff", "muted": "#8f9dc9", "fin": "#ffffff",
-    "hot": "#ffb454", "hot_text": "#ffc978",            # amber: hot, or held for you
-    "cool": "#5ee7ff", "cool_line": "#5ee7ff", "cool_text": "#a5f1ff",  # cyan: cool, or routed
-    "violet": "#8b6cff", "pink": "#ff5fb0",
-    "tag": ("#5ee7ff", "#b69cff"),
+PALETTES = {
+    # Colors sampled from the Semantic Router Labs launch video: near-black ink, orange-red #ff5b2b,
+    # amber for "fast" (#ffd183), teal for "deep" (#97dbd9), cream #e8e6e3, periwinkle and peach.
+    "dark": {
+        "mode": "dark",
+        "bg": "#05080e", "bg2": "#0f0e15", "panel": "#0c1119", "track": "#2b2e3a",
+        "text": "#f2efe9", "muted": "#9b9aa3", "fin": "#ffffff", "star_op": "0.7", "pglow": "0.30",
+        "hot": "#ff5b2b", "hot_text": "#ff8a62", "amber": "#ffd183",         # orange: hot, or held for you
+        "cool": "#97dbd9", "cool_line": "#97dbd9", "cool_text": "#b8ebe9",   # teal: cool, or routed
+        "violet": "#869bdc", "tag": ("#ffd183", "#ff7a4a"), "name": ("#ffffff", "#f2e6d8"),
+        "ramp": [(0.0, "#3a1520"), (0.35, "#a8431f"), (0.65, "#ff5b2b"), (0.85, "#ff9a6a"), (1.0, "#ffe0c2")],
+        "ring": ["#ffd183", "#ffe3b0", "#ffd183", "#ff9a6a"],
+        "glows": [(1010, 30, 340, "#a8431f", 0.42), (230, 330, 300, "#5a2a3a", 0.40),
+                  (1190, 310, 240, "#ff5b2b", 0.20), (600, 100, 170, "#ff7a4a", 0.16)],
+    },
+    "light": {
+        "mode": "light",
+        "bg": "#e8e6e3", "bg2": "#ebe4d4", "panel": "#f4f2ed", "track": "#c9c6bd",
+        "text": "#14151a", "muted": "#66655f", "fin": "#ffffff", "star_op": "0.3", "pglow": "0.16",
+        "hot": "#e5421a", "hot_text": "#c93410", "amber": "#b87a1c",
+        "cool": "#7dc2c0", "cool_line": "#3f9a98", "cool_text": "#256b69",
+        "violet": "#6f84c8", "tag": ("#d63a15", "#a82c0f"), "name": ("#14151a", "#14151a"),
+        "ramp": [(0.0, "#a84a36"), (0.35, "#d6502a"), (0.65, "#ff7a4a"), (0.85, "#ffb08a"), (1.0, "#ffe6cf")],
+        "ring": ["#d98a24", "#f0b25e", "#d98a24", "#ff7a4a"],
+        "glows": [(930, 160, 330, "#f4b98f", 0.55), (200, 300, 260, "#b9c8e8", 0.45), (1100, 40, 220, "#f2b98f", 0.35)],
+    },
 }
-BAR = ("#5ee7ff", "#8b6cff", "#ff5fb0")
-HEAT = [(0.0, "#38bdf8"), (0.35, "#7c5cff"), (0.7, "#ff5fb0"), (1.0, "#ffb454")]  # cool -> hot
+BAR = ("#ff5b2b", "#ffd183", "#97dbd9")
+HEAT = [(0.0, "#7dc2c0"), (0.3, "#8fb0d8"), (0.52, "#e0a994"), (0.75, "#ff7a4a"), (1.0, "#ff5b2b")]  # cool -> hot
 
 CYCLE = 30.0
 SCENE_A = (0.0, 9.4)  # visible window; each edge fades over FADE
@@ -342,7 +361,7 @@ def scene_c(p: dict, an: Anims) -> str:
            f'<stop offset="1" stop-color="{p["panel"]}" stop-opacity="0"/></linearGradient></defs>']
 
     # sky and ground
-    out += [f'<circle cx="{x}" cy="{y}" r="{r * 1.3:.1f}" fill="{p["text"]}" opacity=".7"/>' for x, y, r in STARS]
+    out += [f'<circle cx="{x}" cy="{y}" r="{r * 1.3:.1f}" fill="{p["text"]}" opacity="{p["star_op"]}"/>' for x, y, r in STARS]
     out.append(f'<path d="{arc_path(HORIZON)} V320 H692 Z" fill="url(#earth)"/>'
                f'<path d="{arc_path(HORIZON)}" fill="none" stroke="{p["cool_line"]}" stroke-width="7" opacity=".16"/>'
                f'<path d="{arc_path(HORIZON)}" fill="none" stroke="{p["cool_line"]}" stroke-width="1.6" opacity=".85"/>'
@@ -408,38 +427,64 @@ def scene_c(p: dict, an: Anims) -> str:
     return "".join(out)
 
 
-# ---------------------------------------------------------------- space
-NEBULAE = [(1010, 20, 340, "#6d4aff", 0.50), (240, 330, 300, "#1fb6ff", 0.24),
-           (1190, 310, 240, "#ff4fa3", 0.22), (600, 100, 170, "#3b82f6", 0.18)]
+# ---------------------------------------------------------------- backdrop and tile planet
+# Style reference: the Semantic Router Labs launch video. A near-black sky with a burnt-orange
+# nebula, small square "pixel" stars, and a planet built from square tiles that dissolve in and out.
 TWINKLE_PERIODS = (3, 5, 6, 10)  # each divides CYCLE, so every star loops without a jump
 SHOOTERS = [(60, 10, 4.0), (250, 18, 14.0), (140, 8, 24.0)]  # start x, start y, start time
-PLANET = (596, 100, 30)  # center x, center y, radius
+PLANET = (596, 100, 32)  # center x, center y, radius
 TILT = -18
+TILE = 5
 
 
 def lcg(seed: int):
-    """A small deterministic random stream, so the starfield is the same on every build."""
+    """A small deterministic random stream, so the artwork is the same on every build."""
     x = seed
     while True:
         x = (x * 1103515245 + 12345) & 0x7FFFFFFF
         yield x / 0x7FFFFFFF
 
 
+def ramp(v: float, stops: list) -> str:
+    v = max(0.0, min(1.0, v))
+    for (a, ca), (b, cb) in zip(stops, stops[1:]):
+        if v <= b:
+            f = (v - a) / (b - a)
+            return "#%02x%02x%02x" % tuple(round(int(ca[i:i + 2], 16) * (1 - f) + int(cb[i:i + 2], 16) * f) for i in (1, 3, 5))
+    return stops[-1][1]
+
+
+def tile_cluster(x0: float, y0: float, cols: int, rows: int, size: float, seed: int, colors: list, fill_odds: float) -> str:
+    """A loose block of faint tiles, like the corners of the video's end card."""
+    rnd = lcg(seed)
+    cells = []
+    for gy in range(rows):
+        for gx in range(cols):
+            if next(rnd) < fill_odds * (1 - 0.6 * (gx + gy) / (cols + rows)):
+                cells.append(f'<rect x="{x0 + gx * size:.0f}" y="{y0 + gy * size:.0f}" width="{size - 1}" height="{size - 1}" '
+                             f'fill="{colors[int(next(rnd) * len(colors))]}"/>')
+    return "".join(cells)
+
+
 def space_defs(p: dict) -> str:
-    nebulae = "".join(
+    glows = "".join(
         f'<radialGradient id="neb{i}" gradientUnits="userSpaceOnUse" cx="{x}" cy="{y}" r="{r}">'
         f'<stop offset="0" stop-color="{c}" stop-opacity="{o}"/><stop offset="1" stop-color="{c}" stop-opacity="0"/></radialGradient>'
-        for i, (x, y, r, c, o) in enumerate(NEBULAE))
+        for i, (x, y, r, c, o) in enumerate(p["glows"]))
     return (f'<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{p["bg"]}"/>'
-            f'<stop offset="1" stop-color="{p["bg2"]}"/></linearGradient>{nebulae}'
+            f'<stop offset="1" stop-color="{p["bg2"]}"/></linearGradient>{glows}'
             f'<linearGradient id="streak" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/>'
             f'<stop offset="1" stop-color="#fff" stop-opacity=".9"/></linearGradient>')
 
 
-def starfield(p: dict, an: Anims) -> str:
-    """Nebula glow, about a hundred stars (every ninth one twinkles), and three shooting stars."""
+def backdrop(p: dict, an: Anims) -> str:
+    """The dark sky (nebula, pixel stars, shooting stars) or the cream card (soft glow, tile clusters)."""
     out = [f'<rect width="1200" height="320" fill="url(#sky)"/>']
-    out += [f'<rect width="1200" height="320" fill="url(#neb{i})"/>' for i in range(len(NEBULAE))]
+    out += [f'<rect width="1200" height="320" fill="url(#neb{i})"/>' for i in range(len(p["glows"]))]
+    if p["mode"] == "light":
+        out.append(f'<g opacity=".7">{tile_cluster(6, 6, 7, 5, 8, 3, ["#f2b98f", "#b9c8e8", "#e8a584"], 0.55)}'
+                   f'{tile_cluster(1142, 262, 7, 7, 8, 5, ["#b9c8e8", "#f2b98f", "#9fd0cf"], 0.55)}</g>')
+        return "".join(out)
     rnd = lcg(11)
     dots: dict[float, list[str]] = {0.35: [], 0.6: [], 0.9: []}
     twinkling = []
@@ -448,66 +493,87 @@ def starfield(p: dict, an: Anims) -> str:
         if 40 < x < 600 and 76 < y < 212:  # keep the title area clear
             continue
         level = 0.35 if o < 0.5 else 0.6 if o < 0.85 else 0.9
+        side = max(1.2, r * 1.6)
         if i % 9 == 0:
-            twinkling.append((x, y, r, level))
+            twinkling.append((x, y, side, level))
         else:
-            dots[level].append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{r:.1f}"/>')
+            dots[level].append(f'<rect x="{x:.0f}" y="{y:.0f}" width="{side:.1f}" height="{side:.1f}"/>')
     out += [f'<g fill="{p["text"]}" fill-opacity="{level}">{"".join(items)}</g>' for level, items in dots.items()]
-    tints = (p["text"], p["cool"], p["pink"], p["text"])
-    for k, (x, y, r, level) in enumerate(twinkling):
+    tints = (p["text"], p["amber"], p["cool"], p["text"])
+    for k, (x, y, side, level) in enumerate(twinkling):
         period = TWINKLE_PERIODS[k % len(TWINKLE_PERIODS)]
         hi, lo = (level, level * 0.15) if k % 2 else (level * 0.15, level)
         frames = []
         for j in range(int(CYCLE // period)):
             frames += [(j * period, f"opacity:{hi:.2f}"), (j * period + period / 2, f"opacity:{lo:.2f}")]
         frames.append((CYCLE, f"opacity:{hi:.2f}"))
-        out.append(f'<circle {an.attr(frames, base=f"opacity:{level};")} cx="{x:.0f}" cy="{y:.0f}" r="{r * 1.2:.1f}" fill="{tints[k % 4]}"/>')
+        out.append(f'<rect {an.attr(frames, base=f"opacity:{level};")} x="{x:.0f}" y="{y:.0f}" width="{side * 1.3:.1f}" '
+                   f'height="{side * 1.3:.1f}" fill="{tints[k % 4]}"/>')
     for x, y, t in SHOOTERS:
         frames = [(0.0, "opacity:0;transform:translateX(0)"), (t, "opacity:0;transform:translateX(0)"),
                   (t + 0.05, "opacity:1;transform:translateX(0)"), (t + 0.85, "opacity:0;transform:translateX(230px)")]
         out.append(f'<g transform="translate({x} {y}) rotate(15)"><g {an.attr(frames, base="opacity:0;", timing="ease-in")}>'
-                   f'<rect x="-80" y="-1" width="80" height="2" rx="1" fill="url(#streak)"/><circle r="2" fill="#fff"/></g></g>')
+                   f'<rect x="-80" y="-1" width="80" height="2" fill="url(#streak)"/><rect x="-2" y="-2" width="4" height="4" fill="#fff"/></g></g>')
     return "".join(out)
 
 
 def planet(p: dict, an: Anims) -> str:
-    """A ringed planet with a moon that passes behind it and in front of it."""
+    """A planet and its ring built from square tiles. The tiles dissolve in at the start of each loop
+    and out at the end, like the mosaic transitions in the video. A square moon passes behind and in front."""
     cx, cy, r = PLANET
-    ring, orbit_rx, orbit_ry = 54, 72, 20
-    defs = (f'<defs>'
-            f'<radialGradient id="pbody" cx=".32" cy=".28" r=".9"><stop offset="0" stop-color="#c4f5ff"/><stop offset=".3" stop-color="#5b8cff"/>'
-            f'<stop offset=".7" stop-color="#3b2a9c"/><stop offset="1" stop-color="#120a3a"/></radialGradient>'
-            f'<radialGradient id="pshade" cx=".3" cy=".28" r="1"><stop offset=".45" stop-color="#000" stop-opacity="0"/>'
-            f'<stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>'
-            f'<radialGradient id="pglow" gradientUnits="userSpaceOnUse" cx="{cx}" cy="{cy}" r="120"><stop offset="0" stop-color="{p["cool"]}" stop-opacity=".28"/>'
-            f'<stop offset="1" stop-color="{p["cool"]}" stop-opacity="0"/></radialGradient>'
-            f'<linearGradient id="pring" x1="0" x2="1"><stop offset="0" stop-color="{p["pink"]}"/><stop offset=".5" stop-color="{p["hot"]}"/>'
-            f'<stop offset="1" stop-color="{p["pink"]}"/></linearGradient>'
-            f'<clipPath id="pback"><rect x="0" y="0" width="1200" height="{cy}"/></clipPath>'
-            f'<clipPath id="pfront"><rect x="0" y="{cy}" width="1200" height="320"/></clipPath>'
-            f'</defs>')
+    # six dissolve steps, each a group of tiles; the same six animations serve every layer
+    steps = []
+    for b in range(6):
+        t_in, t_out = 0.1 + 0.15 * b, CYCLE - 1.3 + 0.15 * b
+        steps.append(an.attr([(0.0, "opacity:0"), (t_in, "opacity:0"), (t_in + 0.25, "opacity:1"), (t_out, "opacity:1"), (t_out + 0.25, "opacity:0")],
+                             base="opacity:1;", timing="steps(3)"))
 
-    def ring_arc(sweep: int, rx: float, ry: float, width: float, opacity: float) -> str:
-        return (f'<path d="M{cx - rx} {cy} A{rx} {ry} 0 0 {sweep} {cx + rx} {cy}" fill="none" stroke="url(#pring)" '
-                f'stroke-width="{width}" stroke-opacity="{opacity}" stroke-linecap="round"/>')
+    def layer(tiles: list[tuple[int, str]]) -> str:
+        groups: list[list[str]] = [[] for _ in steps]
+        for bucket, tile in tiles:
+            groups[bucket].append(tile)
+        return "".join(f'<g {steps[b]}>{"".join(g)}</g>' for b, g in enumerate(groups) if g)
+
+    rnd = lcg(5)
+    body = []
+    for gy in range(-7, 8):
+        for gx in range(-7, 8):
+            nx, ny = gx * TILE / r, gy * TILE / r
+            if nx * nx + ny * ny > 0.98:
+                continue
+            nz = math.sqrt(max(0.0, 1 - nx * nx - ny * ny))
+            light = max(0.0, -0.5 * nx - 0.6 * ny + 0.62 * nz) + (next(rnd) - 0.5) * 0.14
+            body.append((int(next(rnd) * 6), f'<rect x="{cx + gx * TILE - TILE / 2:.0f}" y="{cy + gy * TILE - TILE / 2:.0f}" '
+                                              f'width="{TILE - 1}" height="{TILE - 1}" rx="1" fill="{ramp(light, p["ramp"])}"/>'))
+
+    def ring_tiles(front: bool) -> list[tuple[int, str]]:
+        tiles = []
+        for rx, ry, row in ((60, 14, 0), (52, 12, 1)):
+            for k in range(54):
+                a = k / 54 * 2 * math.pi
+                if (math.sin(a) > 0) != front:
+                    continue
+                x, y = rx * math.cos(a), ry * math.sin(a)
+                c, s = math.cos(math.radians(TILT)), math.sin(math.radians(TILT))
+                px, py = round((cx + x * c - y * s) / 4) * 4, round((cy + x * s + y * c) / 4) * 4
+                tiles.append((int(next(rnd) * 6), f'<rect x="{px - 2}" y="{py - 2}" width="3.4" height="3.4" fill="{p["ring"][(k + row) % len(p["ring"])]}" '
+                                                  f'opacity="{0.95 if row == 0 else 0.6}"/>'))
+        return tiles
 
     def moon(clip: str) -> str:
-        spin = an.attr([(0.0, "transform:rotate(0deg)"), (CYCLE, "transform:rotate(1080deg)")], timing="linear")
-        return (f'<g transform="rotate({TILT} {cx} {cy})"><g clip-path="url(#{clip})">'
-                f'<g transform="translate({cx} {cy}) scale(1 {orbit_ry / orbit_rx:.4f})"><g {spin}>'
-                f'<ellipse cx="{orbit_rx}" cy="0" rx="4.6" ry="{4.6 * orbit_rx / orbit_ry:.1f}" fill="#dfe8ff"/>'
-                f'</g></g></g></g>')
+        orbit_rx, orbit_ry, n = 72, 20, 24
+        frames = [(i * 10 / n, f"transform:translate({orbit_rx * math.cos(2 * math.pi * i / n):.1f}px,{orbit_ry * math.sin(2 * math.pi * i / n):.1f}px)")
+                  for i in range(n + 1)]
+        spin = an.attr(frames, timing="linear").replace('style="', 'style="animation-duration:10s;', 1)
+        return (f'<g transform="rotate({TILT} {cx} {cy})"><g clip-path="url(#{clip})"><g transform="translate({cx} {cy})">'
+                f'<rect {spin} x="-3.5" y="-3.5" width="7" height="7" fill="{p["text"]}"/></g></g></g>')
 
-    orbit_line = (f'<ellipse cx="{cx}" cy="{cy}" rx="{orbit_rx}" ry="{orbit_ry}" fill="none" stroke="{p["track"]}" '
-                  f'stroke-width="1" stroke-dasharray="2 4" transform="rotate({TILT} {cx} {cy})"/>')
-    return (defs + f'<circle cx="{cx}" cy="{cy}" r="120" fill="url(#pglow)"/>' + orbit_line
-            + f'<g transform="rotate({TILT} {cx} {cy})">{ring_arc(1, ring, 13, 5, .85)}{ring_arc(1, ring - 10, 9, 1.6, .5)}</g>'
-            + moon("pback")
-            + f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="url(#pbody)"/><circle cx="{cx}" cy="{cy}" r="{r}" fill="url(#pshade)"/>'
-            + f'<circle cx="{cx}" cy="{cy}" r="{r + 1}" fill="none" stroke="{p["cool"]}" stroke-opacity=".45" stroke-width="1.6"/>'
-            + f'<ellipse cx="{cx - 11}" cy="{cy - 14}" rx="9" ry="5" fill="#fff" opacity=".28" transform="rotate(-30 {cx - 11} {cy - 14})"/>'
-            + f'<g transform="rotate({TILT} {cx} {cy})">{ring_arc(0, ring, 13, 5, .95)}{ring_arc(0, ring - 10, 9, 1.6, .55)}</g>'
-            + moon("pfront"))
+    defs = (f'<defs><radialGradient id="pglow" gradientUnits="userSpaceOnUse" cx="{cx}" cy="{cy}" r="120"><stop offset="0" stop-color="#ff5b2b" stop-opacity="{p["pglow"]}"/>'
+            f'<stop offset="1" stop-color="#ff5b2b" stop-opacity="0"/></radialGradient>'
+            f'<clipPath id="pback"><rect x="0" y="0" width="1200" height="{cy}"/></clipPath>'
+            f'<clipPath id="pfront"><rect x="0" y="{cy}" width="1200" height="320"/></clipPath></defs>')
+    return (defs + f'<circle cx="{cx}" cy="{cy}" r="120" fill="url(#pglow)"/>' + layer(ring_tiles(False)) + moon("pback")
+            + layer(body) + layer(ring_tiles(True)) + moon("pfront"))
 
 
 # ---------------------------------------------------------------- banner
@@ -518,9 +584,11 @@ def typed(command: str, start: float, p: dict, an: Anims) -> str:
 
 
 def scene_header(title: str, subtitle: str, active: int, p: dict) -> str:
-    dots = "".join(f'<circle cx="{1150 + k * 14}" cy="46" r="4" fill="{p["cool"] if k == active else p["track"]}"/>'
-                   for k in range(3))
-    return f'<text x="{STAGE_X}" y="50" class="title">{title}<tspan class="subtitle"> · {subtitle}</tspan></text>{dots}'
+    """A small uppercase label led by an orange square, as in the video, and three scene squares."""
+    squares = "".join(f'<rect x="{1150 + k * 12}" y="42" width="7" height="7" fill="{p["hot"] if k == active else p["track"]}"/>'
+                      for k in range(3))
+    return (f'<rect x="{STAGE_X}" y="42" width="7" height="7" fill="{p["hot"]}"/>'
+            f'<text x="{STAGE_X + 15}" y="50" class="title">{esc(title)}<tspan class="subtitle"> · {esc(subtitle)}</tspan></text>{squares}')
 
 
 def render(p: dict) -> str:
@@ -528,34 +596,35 @@ def render(p: dict) -> str:
     a_style = an.attr(window(*SCENE_A, FADE), base="opacity:1;")
     b_style = an.attr(window(*SCENE_B, FADE), base="opacity:0;")
     c_style = an.attr(window(*SCENE_C, FADE), base="opacity:0;")
-    a = (scene_header("meta-research", "an agent optimizes a cold plate", 0, p)
+    a = (scene_header("META-RESEARCH", "AN AGENT OPTIMIZES A COLD PLATE", 0, p)
          + typed("$ meta-research run water_cooling", SCENE_A[0] + 0.2, p, an) + scene_a(p, an))
-    b = (scene_header("vSR", "vLLM Semantic Router inside Claude Code", 1, p)
+    b = (scene_header("vSR", "vLLM SEMANTIC ROUTER INSIDE CLAUDE CODE", 1, p)
          + typed("$ claude --plugin vsr", SCENE_B[0] + 0.2, p, an) + scene_b(p, an))
-    c = (scene_header("orbit", "concept · routing beyond the data center", 2, p)
+    c = (scene_header("ORBIT", "CONCEPT · ROUTING BEYOND THE DATA CENTER", 2, p)
          + typed("# what if routing reached orbit?", SCENE_C[0] + 0.2, p, an) + scene_c(p, an))
-    sky = starfield(p, an)
+    sky = backdrop(p, an)
     world = planet(p, an)
     keyframes = "\n      ".join(an.rules)
     mono = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-    sans = '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif'
+    sans = 'Manrope, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif'
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-labelledby="t d">
   <title id="t">Theo Hsiung</title>
-  <desc id="d">AI for Science, LLM systems and agentic infrastructure, over a night sky with a ringed planet and a moon. Three alternating scenes: an agent optimizing a liquid-cooling cold plate, pushing the Pareto frontier of thermal resistance and pressure drop; vLLM Semantic Router inside Claude Code sending each prompt to the right model, masking a secret, and holding a risky Bash command; and a concept of routing compute to orbit, where raw imagery is processed on an orbital node, heavy training goes to ground GPUs, and a task with no ground link waits for the next pass.</desc>
+  <desc id="d">AI for Science, LLM systems and agentic infrastructure, over {"a night sky with a warm nebula" if p["mode"] == "dark" else "a cream card with faint tile clusters"}, with a planet and a moon built from square tiles. Three alternating scenes: an agent optimizing a liquid-cooling cold plate, pushing the Pareto frontier of thermal resistance and pressure drop; vLLM Semantic Router inside Claude Code sending each prompt to the right model, masking a secret, and holding a risky Bash command; and a concept of routing compute to orbit, where raw imagery is processed on an orbital node, heavy training goes to ground GPUs, and a task with no ground link waits for the next pass.</desc>
   <!-- Generated by scripts/banner.py; edit the palette and scenes there, not here. -->
   <defs>
     <clipPath id="round"><rect width="1200" height="320" rx="16"/></clipPath>
     <linearGradient id="bar" x1="0" x2="1"><stop offset="0" stop-color="{BAR[0]}"/><stop offset=".5" stop-color="{BAR[1]}"/><stop offset="1" stop-color="{BAR[2]}"/></linearGradient>
     <linearGradient id="tag" x1="0" x2="1"><stop offset="0" stop-color="{p["tag"][0]}"/><stop offset="1" stop-color="{p["tag"][1]}"/></linearGradient>
-    <linearGradient id="nameg" x1="0" x2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#b8d4ff"/></linearGradient>
+    <linearGradient id="nameg" x1="0" x2="1"><stop offset="0" stop-color="{p["name"][0]}"/><stop offset="1" stop-color="{p["name"][1]}"/></linearGradient>
     {space_defs(p)}
     <style>
-      .name {{ font: 800 64px {sans}; fill: url(#nameg); letter-spacing: -1.5px; }}
-      .tag {{ font: 600 22px {sans}; fill: url(#tag); }}
+      .name {{ font: 700 66px {sans}; fill: url(#nameg); letter-spacing: -2.6px; }}
+      .tag {{ font: 600 22px {sans}; fill: url(#tag); letter-spacing: -.3px; }}
       .sub {{ font: 400 15px {sans}; fill: {p["muted"]}; }}
+      .label {{ font: 600 10.5px {mono}; fill: {p["muted"]}; letter-spacing: 1.4px; }}
       .mono {{ font: 500 14px {mono}; fill: {p["muted"]}; }}
-      .title {{ font: 700 13px {mono}; fill: {p["text"]}; }}
-      .subtitle {{ font-weight: 400; fill: {p["muted"]}; }}
+      .title {{ font: 700 10.5px {mono}; fill: {p["text"]}; letter-spacing: 1.3px; }}
+      .subtitle {{ font-weight: 500; fill: {p["muted"]}; }}
       .small {{ font: 500 11px {mono}; fill: {p["muted"]}; }}
       .tiny {{ font: 500 10px {mono}; fill: {p["muted"]}; }}
       .log {{ font: 500 12px {mono}; fill: {p["muted"]}; }}
@@ -573,7 +642,9 @@ def render(p: dict) -> str:
 
   <g clip-path="url(#round)">{sky}<rect width="1200" height="4" fill="url(#bar)"/></g>
 
-  <text x="64" y="122" class="name">Theo Hsiung</text>
+  <rect x="66" y="52" width="8" height="8" fill="{p["hot"]}"/>
+  <text x="82" y="60" class="label">BUILT IN THE OPEN · TAIWAN</text>
+  <text x="64" y="124" class="name">Theo Hsiung</text>
   <text x="66" y="164" class="tag">AI for Science · LLM Systems · Agentic Infra</text>
   <text x="66" y="196" class="sub">Associate Research Scientist, vLLM Semantic Router · Delta Electronics · Taiwan</text>
 
@@ -587,6 +658,7 @@ def render(p: dict) -> str:
 
 
 if __name__ == "__main__":
-    out = Path(__file__).resolve().parent.parent / "assets" / "banner.svg"
-    out.write_text(render(PALETTE), encoding="utf-8")
-    print(f"wrote {out.relative_to(out.parent.parent)}")
+    assets = Path(__file__).resolve().parent.parent / "assets"
+    for mode, palette in PALETTES.items():
+        (assets / f"banner-{mode}.svg").write_text(render(palette), encoding="utf-8")
+        print(f"wrote assets/banner-{mode}.svg")
